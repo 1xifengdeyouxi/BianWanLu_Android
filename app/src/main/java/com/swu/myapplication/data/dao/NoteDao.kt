@@ -1,31 +1,19 @@
 package com.swu.myapplication.data.dao
 
-import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.swu.myapplication.data.model.Note
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY created_at DESC")
-    fun getAllNotes(): LiveData<List<Note>>
+    fun getAllNotes(): Flow<List<Note>>
 
-    // 新增：按修改时间排序（新逻辑）
-    @Query("SELECT * FROM notes ORDER BY updated_at DESC")
-    fun getAllNotesByModifiedTime(): LiveData<List<Note>>  // 注意方法名和字段名
+    @Query("SELECT * FROM notes WHERE notebookId = :notebookId ORDER BY created_at DESC")
+    fun getNotesByNotebook(notebookId: Long): Flow<List<Note>>
 
-    @Query("SELECT * FROM notes WHERE notebook = :notebook ORDER BY created_at DESC")
-    fun getNotesByNotebook(notebook: String): LiveData<List<Note>>
-
-    @Query("SELECT * FROM notes WHERE title LIKE '%' || :query || '%' OR content LIKE '%' || :query || '%' ORDER BY created_at DESC")
-    fun searchNotes(query: String): LiveData<List<Note>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(note: Note)
+    @Insert
+    suspend fun insert(note: Note): Long
 
     @Update
     suspend fun update(note: Note)
@@ -34,5 +22,8 @@ interface NoteDao {
     suspend fun delete(note: Note)
 
     @Query("SELECT COUNT(*) FROM notes")
-    fun getNoteCount(): LiveData<Int>
+    suspend fun getNoteCount(): Int
+
+    @Query("SELECT COUNT(*) FROM notes WHERE notebookId = :notebookId")
+    suspend fun getNoteCountByNotebook(notebookId: Long): Int
 } 

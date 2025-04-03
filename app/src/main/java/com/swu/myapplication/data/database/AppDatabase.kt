@@ -5,13 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.swu.myapplication.data.model.Note
-import com.swu.myapplication.data.model.Segment
 import com.swu.myapplication.data.dao.NoteDao
+import com.swu.myapplication.data.model.Note
+import com.swu.myapplication.data.model.Notebook
+import com.swu.myapplication.data.model.Segment
+import com.swu.myapplication.data.dao.NotebookDao
 import com.swu.myapplication.data.dao.SegmentDao
 
 @Database(
-    entities = [Note::class, Segment::class],
+    entities = [Note::class, Segment::class, Notebook::class],
     version = 1,
     exportSchema = false
 )
@@ -19,6 +21,7 @@ import com.swu.myapplication.data.dao.SegmentDao
 abstract class AppDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
     abstract fun segmentDao(): SegmentDao
+    abstract fun notebookDao(): NotebookDao
 
     companion object {
         @Volatile

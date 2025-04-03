@@ -7,6 +7,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
+import com.swu.myapplication.data.database.DatabaseInitializer
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
@@ -23,6 +24,9 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         initView()
+
+        // 初始化测试数据
+        //DatabaseInitializer.insertSampleData(this)
     }
 
     private fun initView() {

@@ -9,16 +9,37 @@
         android:id="@+id/notesFragment"
         android:name="com.swu.myapplication.ui.notes.NotesFragment"
         android:label="NotesFragment" >
+        <argument
+            android:name="selectedNotebookId"
+            app:argType="long"
+            android:defaultValue="-2L" />
         <action
             android:id="@+id/action_notesFragment_to_editFragment"
             app:destination="@id/editFragment" />
+        <action
+            android:id="@+id/action_notesFragment_to_notebookManagerFragment"
+            app:destination="@id/notebookManagerFragment" />
     </fragment>
     <fragment
         android:id="@+id/editFragment"
         android:name="com.swu.myapplication.ui.edit.EditFragment"
         android:label="EditFragment" >
+        <argument
+            android:name="notebookId"
+            app:argType="long"
+            android:defaultValue="-2L" />
         <action
             android:id="@+id/action_editFragment_to_notesFragment"
             app:destination="@id/notesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/notebookManagerFragment"
+        android:name="com.swu.myapplication.ui.notebook.NotebookManagerFragment"
+        android:label="NotebookManagerFragment" >
+        <action
+            android:id="@+id/action_notebookManagerFragment_to_notesFragment"
+            app:destination="@id/notesFragment">
+
+        </action>
     </fragment>
 </navigation>

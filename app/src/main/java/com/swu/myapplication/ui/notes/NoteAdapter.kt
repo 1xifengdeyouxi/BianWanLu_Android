@@ -1,44 +1,36 @@
 package com.swu.myapplication.ui.notes
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.swu.myapplication.R
 import com.swu.myapplication.data.model.Note
-import java.text.SimpleDateFormat
-import java.util.*
+import com.swu.myapplication.databinding.ItemNoteBinding
 
-class NoteAdapter(private val onItemClick: (Note) -> Unit) :
-    ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallback()) {
+class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_note, parent, false)
-        return NoteViewHolder(view)
+        val binding = ItemNoteBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return NoteViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        val note = getItem(position)
-        holder.bind(note)
+        holder.bind(getItem(position))
     }
 
-    inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
-        private val contentTextView: TextView = itemView.findViewById(R.id.contentTextView)
-        private val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
-        private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+    class NoteViewHolder(private val binding: ItemNoteBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(note: Note) {
-            titleTextView.text = note.title
-            contentTextView.text = note.content
-            dateTextView.text = dateFormat.format(note.updatedAt)
-
-            itemView.setOnClickListener {
-                onItemClick(note)
+            binding.apply {
+                tvTitle.text = note.title
+                tvContent.text = note.content
+                tvTime.text = note.updatedAt
             }
         }
     }

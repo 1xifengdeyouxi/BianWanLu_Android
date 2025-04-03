@@ -34,7 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="cursive"
-                    android:text="笔记"
+                    android:text="全部笔记"
                     android:textColor="@android:color/black"
                     android:textSize="36sp"
                     android:textStyle="bold" />
@@ -117,89 +117,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/layoutAllNotes"
-                    android:layout_width="wrap_content"
+                <ImageButton
+                    android:id="@+id/btnNotebookManager"
+                    android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@android:color/white"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="12dp"
+                    android:src="@android:drawable/ic_menu_sort_by_size" />
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="4dp"
-                        android:src="@android:drawable/ic_menu_sort_by_size" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="全部笔记"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardQuickNotes"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/notebookChipGroup"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="8dp"
-                    app:cardBackgroundColor="#F0F0F0"
-                    app:cardCornerRadius="25dp"
-                    app:cardElevation="0dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:text="速记"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp" />
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardDefaultNotes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="8dp"
-                    app:cardBackgroundColor="#F0F0F0"
-                    app:cardCornerRadius="25dp"
-                    app:cardElevation="0dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:text="默认笔记本"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp" />
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardMaterials"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="8dp"
-                    app:cardBackgroundColor="#F0F0F0"
-                    app:cardCornerRadius="25dp"
-                    app:cardElevation="0dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:text="教材信息"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp" />
-                </androidx.cardview.widget.CardView>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    app:singleSelection="true" />
 
             </LinearLayout>
         </HorizontalScrollView>
@@ -210,9 +142,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingStart="16dp"
+        android:paddingStart="0dp"
         android:paddingTop="8dp"
-        android:paddingEnd="16dp"
+        android:paddingEnd="0dp"
         android:paddingBottom="80dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
