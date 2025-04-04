@@ -2,6 +2,7 @@ package com.swu.myapplication.ui.edit
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,21 +15,25 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.internal.ViewUtils.showKeyboard
-import com.swu.myapplication.R
 import com.swu.myapplication.data.database.AppDatabase
 import com.swu.myapplication.data.model.Note
 import com.swu.myapplication.data.repository.NoteRepository
+import com.swu.myapplication.data.repository.NotebookRepository
 import com.swu.myapplication.databinding.FragmentEditBinding
+import com.swu.myapplication.ui.notebook.NotebookChipHelper
+import com.swu.myapplication.ui.notebook.NotebookViewModel
 import com.swu.myapplication.ui.notes.NoteViewModel
 import kotlinx.coroutines.launch
-import java.util.*
 
 class EditFragment : Fragment() {
     private var _binding: FragmentEditBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var viewModel: NoteViewModel
+    private lateinit var notebookViewModel: NotebookViewModel
     private val args: EditFragmentArgs by navArgs()
+
+    private var isSaved: Boolean = false
 
     // 编辑状态管理
     private var currentNote: Note? = null
@@ -52,15 +57,16 @@ class EditFragment : Fragment() {
         setupUI()
         setupTextWatchers()
         loadInitialData()
+
+        Log.d("EditFragment", "传入notebook的id ${args.notebookId}  ${args.noteId}")
     }
 
     private fun setupViewModel() {
         val database = AppDatabase.getDatabase(requireContext())
-        val repository = NoteRepository(database.noteDao())
-        viewModel = ViewModelProvider(
-            this,
-            NoteViewModel.Factory(repository)
-        )[NoteViewModel::class.java]
+        val noteRepository = NoteRepository(database.noteDao())
+        val notebookRepository = NotebookRepository(database.notebookDao())
+        val factory = NoteViewModel.Factory(noteRepository, notebookRepository)
+        viewModel = ViewModelProvider(this, factory)[NoteViewModel::class.java]
     }
 
     private fun setupUI() {
@@ -97,88 +103,94 @@ class EditFragment : Fragment() {
             // 新建笔记时检查笔记本ID有效性
             args.notebookId == Note.INVALID_ID -> {
                 showToast("无效的笔记本")
-                findNavController().navigateUp()
             }
         }
     }
 
     private fun saveNote() {
-        if (!validateInput()) return
+        val title = binding.etTitle.text.toString().trim()
+        val content = binding.etContent.text.toString().trim()
+
+        if (title.isEmpty() && content.isEmpty()) {
+            hideKeyboard()
+            showToast("请输入内容")
+            return
+        }
 
         lifecycleScope.launch {
-            try {
-                if (currentNote == null) {
-                    handleCreateNote()
+            if (args.noteId == Note.INVALID_ID) {
+                // 新建笔记的情况
+                if (!isSaved) {
+                    // 第一次保存，创建新笔记
+                    val newNote = Note(
+                        id = 0, // 让Room自动生成ID
+                        title = title.ifEmpty { "无标题" },
+                        content = content,
+                        notebookId = args.notebookId,
+                        createdTime = System.currentTimeMillis(),
+                        modifiedTime = System.currentTimeMillis()
+                    )
+                    viewModel.insertNote(newNote)
+                    currentNote = newNote
+                    isSaved = true
+                    showToast("创建笔记成功")
                 } else {
-                    handleUpdateNote()
-                    currentNote?.id ?: Note.INVALID_ID
+                    // 已经保存过，更新最近创建的笔记
+                    currentNote?.let { note ->
+                        val updatedNote = note.copy(
+                            title = title.ifEmpty { "无标题" },
+                            content = content,
+                            modifiedTime = System.currentTimeMillis()
+                        )
+                        viewModel.updateNote(updatedNote)
+                        showToast("保存成功")
+                    }
                 }
-                navigateBackWithSuccess()
-            } catch (e: Exception) {
-                showToast("保存失败: ${e.message}")
+            } else {
+                // 编辑已有笔记的情况
+                if (isContentChanged) {
+                    currentNote?.let { note ->
+                        val updatedNote = note.copy(
+                            title = title.ifEmpty { "无标题" },
+                            content = content,
+                            modifiedTime = System.currentTimeMillis()
+                        )
+                        viewModel.updateNote(updatedNote)
+                        showToast("保存成功")
+                    }
+                } else {
+                    showToast("内容未发生修改，无需保存")
+                }
             }
         }
-    }
-
-    private suspend fun handleCreateNote() {
-        val newNote = createNewNote()
-        viewModel.insertNote(newNote)
-        currentNote = newNote
-    }
-
-    private suspend fun handleUpdateNote() {
-        currentNote?.let { originalNote ->
-            val updatedNote = originalNote.copy(
-                title = binding.etTitle.text.toString(),
-                content = binding.etContent.text.toString(),
-                modifiedTime = System.currentTimeMillis()
-            )
-            viewModel.updateNote(updatedNote)
-        }
-    }
-
-    private fun createNewNote(): Note {
-        return Note(
-            title = binding.etTitle.text.toString().trim().takeIf { it.isNotEmpty() } ?: "无标题",
-            content = binding.etContent.text.toString().trim(),
-            notebookId = args.notebookId,
-            createdTime = System.currentTimeMillis(),
-            modifiedTime = System.currentTimeMillis()
-        )
-    }
-
-    private fun validateInput(): Boolean {
-        if (binding.etTitle.text.isNullOrEmpty() && binding.etContent.text.isNullOrEmpty()) {
-            showToast("请输入内容")
-            return false
-        }
-        return true
+        hideKeyboard()
     }
 
     private fun handleBackPress() {
-        if (isContentChanged) {
-            showDiscardDialog()
-        } else {
-            navigateBack()
+        lifecycleScope.launch {
+            if (isContentChanged) {
+                if (args.noteId == Note.INVALID_ID) {
+                    // 新建笔记的情况
+                    if (!isSaved) {
+                        // 如果从未保存过且内容有变化，创建新笔记
+                        saveNote()
+                    }
+                } else {
+                    // 编辑已有笔记的情况
+                    currentNote?.let { note ->
+                        val updatedNote = note.copy(
+                            title = binding.etTitle.text.toString().trim().ifEmpty { "无标题" },
+                            content = binding.etContent.text.toString().trim(),
+                            modifiedTime = System.currentTimeMillis()
+                        )
+                        viewModel.updateNote(updatedNote)
+                        showToast("保存成功")
+                    }
+                }
+            }
+            hideKeyboard()
+            findNavController().navigateUp()
         }
-    }
-
-    private fun showDiscardDialog() {
-        // 实现放弃修改对话框
-        navigateBack()
-    }
-
-    private fun navigateBack() {
-        hideKeyboard()
-        findNavController().navigateUp()
-    }
-
-    private fun navigateBackWithSuccess() {
-        hideKeyboard()
-        parentFragmentManager.setFragmentResult(REQUEST_KEY_EDIT, Bundle().apply {
-            putBoolean(EXTRA_SAVED_SUCCESS, true)
-        })
-        findNavController().navigateUp()
     }
 
     private fun hideKeyboard() {
@@ -193,10 +205,5 @@ class EditFragment : Fragment() {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    companion object {
-        const val REQUEST_KEY_EDIT = "edit_request"
-        const val EXTRA_SAVED_SUCCESS = "saved_success"
     }
 }

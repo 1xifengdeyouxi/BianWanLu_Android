@@ -60,15 +60,18 @@ class NotesFragment : Fragment() {
 
     private fun setupViewModel() {
         val database = AppDatabase.getDatabase(requireContext())
-        val repository = NoteRepository(database.noteDao())
-        val factory = NoteViewModel.Factory(repository)
-        viewModel = ViewModelProvider(this, factory)[NoteViewModel::class.java]
-
+        val noteRepository = NoteRepository(database.noteDao())
         val notebookRepository = NotebookRepository(database.notebookDao())
+        
+        // 初始化NoteViewModel
+        val noteFactory = NoteViewModel.Factory(noteRepository, notebookRepository)
+        viewModel = ViewModelProvider(this, noteFactory)[NoteViewModel::class.java]
+
+        // 初始化NotebookViewModel
         val notebookFactory = NotebookViewModel.Factory(notebookRepository)
         notebookViewModel = ViewModelProvider(this, notebookFactory)[NotebookViewModel::class.java]
 
-        //初始化笔记本
+        // 初始化笔记本
         notebookViewModel.initDefaultNotebooks()
     }
 
@@ -147,22 +150,6 @@ class NotesFragment : Fragment() {
                     }
                 }
             )
-        }
-    }
-
-    private fun handleArguments() {
-        val selectedNotebookId = args.selectedNotebookId
-        viewModel.setCurrentNotebook(selectedNotebookId)
-
-        // 更新标题
-        when (selectedNotebookId) {
-            NotebookChipHelper.CHIP_ALL_NOTES_ID -> updateCollapsedTitle("全部笔记")
-            else -> {
-                lifecycleScope.launch {
-                    val notebook = notebookViewModel.allNotebooks.value?.find { it.id == selectedNotebookId }
-                    updateCollapsedTitle(notebook?.name ?: "全部笔记")
-                }
-            }
         }
     }
 } 

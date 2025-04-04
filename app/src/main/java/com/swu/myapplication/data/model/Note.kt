@@ -26,7 +26,17 @@ data class Note(
     val createdTime: Long = System.currentTimeMillis(),
     val modifiedTime: Long = System.currentTimeMillis()
 ) {
+    fun copyWithModification(
+        title: String = this.title,
+        content: String = this.content,
+        modifiedTime: Long = System.currentTimeMillis()
+    ) = this.copy(
+        title = title,
+        content = content,
+        modifiedTime = modifiedTime
+    )
     companion object {
+        //-1代表的是，默认是创建笔记本
         const val INVALID_ID = -1L
     }
 }

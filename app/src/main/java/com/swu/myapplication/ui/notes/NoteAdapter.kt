@@ -1,9 +1,7 @@
 package com.swu.myapplication.ui.notes
 
-import android.graphics.ColorSpace.Adaptation
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.constraintlayout.helper.widget.Carousel.Adapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +30,6 @@ class NoteAdapter(
     inner class NoteViewHolder(
         private val binding: ItemNoteBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-
         init {
             binding.root.setOnClickListener {
                 val position = adapterPosition
