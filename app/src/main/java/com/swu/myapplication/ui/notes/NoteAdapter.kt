@@ -1,14 +1,20 @@
 package com.swu.myapplication.ui.notes
 
+import android.graphics.ColorSpace.Adaptation
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.constraintlayout.helper.widget.Carousel.Adapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.swu.myapplication.data.model.Note
 import com.swu.myapplication.databinding.ItemNoteBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
-class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallback()) {
+class NoteAdapter(
+    private val onNoteClick: (Note) -> Unit
+) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val binding = ItemNoteBinding.inflate(
@@ -23,15 +29,28 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallba
         holder.bind(getItem(position))
     }
 
-    class NoteViewHolder(private val binding: ItemNoteBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class NoteViewHolder(
+        private val binding: ItemNoteBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onNoteClick(getItem(position))
+                }
+            }
+        }
 
         fun bind(note: Note) {
-            binding.apply {
-                tvTitle.text = note.title
-                tvContent.text = note.content
-                tvTime.text = note.modifiedTime.toString()
-            }
+            binding.tvTitle.text = note.title
+            binding.tvContent.text = note.content
+            binding.tvTime.text = formatTime(note.modifiedTime)
+        }
+
+        private fun formatTime(timestamp: Long): String {
+            val sdf = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault())
+            return sdf.format(Date(timestamp))
         }
     }
 

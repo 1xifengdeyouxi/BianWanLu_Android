@@ -22,11 +22,15 @@
     <fragment
         android:id="@+id/editFragment"
         android:name="com.swu.myapplication.ui.edit.EditFragment"
-        android:label="EditFragment" >
+        android:label="编辑笔记">
         <argument
             android:name="notebookId"
-            app:argType="long"
-            android:defaultValue="-2L" />
+            android:defaultValue="-2L"
+            app:argType="long" />
+        <argument
+            android:name="noteId"
+            android:defaultValue="-1L"
+            app:argType="long" />
         <action
             android:id="@+id/action_editFragment_to_notesFragment"
             app:destination="@id/notesFragment" />

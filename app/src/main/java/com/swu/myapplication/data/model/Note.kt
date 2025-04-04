@@ -25,4 +25,8 @@ data class Note(
     val isCompleted: Boolean = false,
     val createdTime: Long = System.currentTimeMillis(),
     val modifiedTime: Long = System.currentTimeMillis()
-) 
+) {
+    companion object {
+        const val INVALID_ID = -1L
+    }
+}

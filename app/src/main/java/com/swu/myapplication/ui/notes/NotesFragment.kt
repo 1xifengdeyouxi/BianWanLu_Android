@@ -73,7 +73,15 @@ class NotesFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = NoteAdapter()
+        adapter = NoteAdapter { note ->
+            // 编辑已有笔记
+            val action = NotesFragmentDirections.actionNotesFragmentToEditFragment(
+                notebookId = note.notebookId,
+                noteId = note.id
+            )
+            findNavController().navigate(action)
+        }
+        
         binding.notesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = this@NotesFragment.adapter
@@ -81,13 +89,16 @@ class NotesFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
+        // 新建笔记按钮
         binding.addNoteFab.setOnClickListener {
             val action = NotesFragmentDirections.actionNotesFragmentToEditFragment(
-                notebookId = viewModel.currentNotebookId.value ?: 0L
+                notebookId = viewModel.currentNotebookId.value ?: -2L,
+                noteId = -1L  // -1表示新建笔记
             )
             findNavController().navigate(action)
         }
 
+        // 笔记本管理按钮
         binding.btnNotebookManager.setOnClickListener {
             findNavController().navigate(R.id.action_notesFragment_to_notebookListFragment)
         }
