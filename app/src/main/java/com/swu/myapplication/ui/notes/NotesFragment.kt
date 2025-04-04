@@ -68,6 +68,7 @@ class NotesFragment : Fragment() {
         val notebookFactory = NotebookViewModel.Factory(notebookRepository)
         notebookViewModel = ViewModelProvider(this, notebookFactory)[NotebookViewModel::class.java]
 
+        //初始化笔记本
         notebookViewModel.initDefaultNotebooks()
     }
 
@@ -120,69 +121,36 @@ class NotesFragment : Fragment() {
 
     private fun observeNotebooks() {
         notebookViewModel.allNotebooks.observe(viewLifecycleOwner) { notebooks ->
-            NotebookChipHelper.updateChipGroup(binding.notebookChipGroup, notebooks) { selectedNotebookId ->
-                viewModel.setCurrentNotebook(selectedNotebookId)
-                when (selectedNotebookId) {
-                    -2L -> updateCollapsedTitle("全部笔记")
-                    -1L -> updateCollapsedTitle("待办")
-                    else -> {
-                        val notebook = notebooks.find { it.id == selectedNotebookId }
-                        updateCollapsedTitle(notebook?.name ?: "全部笔记")
+            NotebookChipHelper.updateChipGroup(
+                chipGroup = binding.notebookChipGroup,
+                notebooks = notebooks,
+                selectedNotebookId = args.selectedNotebookId,  // 传入选中的笔记本ID
+                onNotebookSelected = { selectedNotebookId ->
+                    viewModel.setCurrentNotebook(selectedNotebookId)
+                    when (selectedNotebookId) {
+                        NotebookChipHelper.CHIP_ALL_NOTES_ID -> updateCollapsedTitle("全部笔记")
+                        else -> {
+                            val notebook = notebooks.find { it.id == selectedNotebookId }
+                            updateCollapsedTitle(notebook?.name ?: "全部笔记")
+                        }
                     }
                 }
-            }
-            if (!isArgumentsHandled) {
-                isArgumentsHandled = true
-                binding.notebookChipGroup.post {
-                    handleArguments()
-                }
-            }
+            )
         }
     }
 
     private fun handleArguments() {
         val selectedNotebookId = args.selectedNotebookId
-
-        Log.d("wmt","NotesFragment中 selectedNotebookId = $selectedNotebookId")
-        
         viewModel.setCurrentNotebook(selectedNotebookId)
 
-        binding.notebookChipGroup.post {
-            try {
-                when (selectedNotebookId) {
-                    -2L -> {
-                        binding.notebookChipGroup.check(NotebookChipHelper.CHIP_ALL_NOTES_ID.toInt())
-                        updateCollapsedTitle("全部笔记")
-                        Log.d("wmt", "选中全部笔记标签")
-                    }
-                    else -> {
-                        var found = false
-                        binding.notebookChipGroup.children.forEach { view ->
-                            if (view is Chip) {
-                                val chipNotebookId = view.tag as? Long
-                                if (chipNotebookId == selectedNotebookId) {
-                                    binding.notebookChipGroup.check(view.id)
-                                    found = true
-                                    val notebook = notebookViewModel.allNotebooks.value?.find { it.id == selectedNotebookId }
-                                    updateCollapsedTitle(notebook?.name ?: "全部笔记")
-                                    Log.d("wmt", "选中笔记本标签: $selectedNotebookId")
-                                    return@forEach
-                                }
-                            }
-                        }
-                        if (!found) {
-                            binding.notebookChipGroup.check(NotebookChipHelper.CHIP_ALL_NOTES_ID.toInt())
-                            viewModel.setCurrentNotebook(0L)
-                            updateCollapsedTitle("全部笔记")
-                            Log.d("wmt", "未找到对应笔记本，默认选中全部笔记")
-                        }
-                    }
+        // 更新标题
+        when (selectedNotebookId) {
+            NotebookChipHelper.CHIP_ALL_NOTES_ID -> updateCollapsedTitle("全部笔记")
+            else -> {
+                lifecycleScope.launch {
+                    val notebook = notebookViewModel.allNotebooks.value?.find { it.id == selectedNotebookId }
+                    updateCollapsedTitle(notebook?.name ?: "全部笔记")
                 }
-            } catch (e: Exception) {
-                Log.e("wmt", "设置选中状态失败: ${e.message}")
-                binding.notebookChipGroup.check(NotebookChipHelper.CHIP_ALL_NOTES_ID.toInt())
-                viewModel.setCurrentNotebook(0L)
-                updateCollapsedTitle("全部笔记")
             }
         }
     }
