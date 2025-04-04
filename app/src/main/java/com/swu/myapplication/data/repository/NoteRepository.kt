@@ -1,6 +1,5 @@
 package com.swu.myapplication.data.repository
 
-import androidx.lifecycle.LiveData
 import com.swu.myapplication.data.dao.NoteDao
 import com.swu.myapplication.data.model.Note
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +8,7 @@ class NoteRepository(private val noteDao: NoteDao) {
     val allNotes: Flow<List<Note>> = noteDao.getAllNotes()
 
     fun getNotesByNotebook(notebookId: Long): Flow<List<Note>> {
-        return noteDao.getNotesByNotebook(notebookId)
+        return noteDao.getNotesByNotebookId(notebookId)
     }
 
     suspend fun insert(note: Note): Long {
@@ -24,15 +23,19 @@ class NoteRepository(private val noteDao: NoteDao) {
         noteDao.delete(note)
     }
 
-    suspend fun getNoteCount(): Int {
-        return noteDao.getNoteCount()
-    }
-
     suspend fun getNoteCountByNotebook(notebookId: Long): Int {
-        return noteDao.getNoteCountByNotebook(notebookId)
+        return noteDao.getNoteCountInNotebook(notebookId)
     }
 
-//    fun searchNotes(query: String): LiveData<List<Note>> {
-//        return noteDao.searchNotes(query)
-//    }
+    fun getTodoNotes(): Flow<List<Note>> = noteDao.getTodoNotes()
+
+    fun getNotesByNotebookId(notebookId: Long): Flow<List<Note>> = noteDao.getNotesByNotebookId(notebookId)
+
+    suspend fun getNoteById(id: Long): Note? {
+        return noteDao.getNoteById(id)
+    }
+
+    fun searchNotes(query: String): Flow<List<Note>> {
+        return noteDao.searchNotes("%$query%")
+    }
 } 

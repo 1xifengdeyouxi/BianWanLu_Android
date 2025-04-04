@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/notesFragment">
 
@@ -17,8 +16,8 @@
             android:id="@+id/action_notesFragment_to_editFragment"
             app:destination="@id/editFragment" />
         <action
-            android:id="@+id/action_notesFragment_to_notebookManagerFragment"
-            app:destination="@id/notebookManagerFragment" />
+            android:id="@+id/action_notesFragment_to_notebookListFragment"
+            app:destination="@id/notebookListFragment" />
     </fragment>
     <fragment
         android:id="@+id/editFragment"
@@ -33,13 +32,11 @@
             app:destination="@id/notesFragment" />
     </fragment>
     <fragment
-        android:id="@+id/notebookManagerFragment"
-        android:name="com.swu.myapplication.ui.notebook.NotebookManagerFragment"
-        android:label="NotebookManagerFragment" >
+        android:id="@+id/notebookListFragment"
+        android:name="com.swu.myapplication.ui.notebook.NotebookListFragment"
+        android:label="NotebookListFragment" >
         <action
-            android:id="@+id/action_notebookManagerFragment_to_notesFragment"
-            app:destination="@id/notesFragment">
-
-        </action>
+            android:id="@+id/action_notebookListFragment_to_notesFragment"
+            app:destination="@id/notesFragment" />
     </fragment>
 </navigation>

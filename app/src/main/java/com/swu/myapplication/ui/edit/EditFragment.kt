@@ -105,11 +105,12 @@ class EditFragment : Fragment() {
         val note = Note(
             title = title,
             content = content,
-            createdAt = System.currentTimeMillis().toString(),
-            updatedAt = System.currentTimeMillis().toString(),
-            notebookId = args.notebookId  // 使用传入的笔记本ID
+            notebookId = args.notebookId,  // 使用传入的笔记本ID
+            createdTime = System.currentTimeMillis(),
+            modifiedTime = System.currentTimeMillis(),
+
         )
-        viewModel.insert(note)
+        viewModel.insertNote(note)
         findNavController().navigateUp()
     }
 
@@ -126,10 +127,5 @@ class EditFragment : Fragment() {
         if (currentFocus != null) {
             imm.hideSoftInputFromWindow(currentFocus.windowToken, 0)
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        hideKeyboard()
     }
 } 

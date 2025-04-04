@@ -30,7 +30,7 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallba
             binding.apply {
                 tvTitle.text = note.title
                 tvContent.text = note.content
-                tvTime.text = note.updatedAt
+                tvTime.text = note.modifiedTime.toString()
             }
         }
     }

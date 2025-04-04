@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
@@ -23,6 +24,7 @@ import com.swu.myapplication.data.database.AppDatabase
 import com.swu.myapplication.data.repository.NoteRepository
 import com.swu.myapplication.data.repository.NotebookRepository
 import com.swu.myapplication.databinding.FragmentNotesBinding
+import com.swu.myapplication.ui.notebook.NotebookChipHelper
 import com.swu.myapplication.ui.notebook.NotebookViewModel
 import kotlinx.coroutines.launch
 
@@ -32,12 +34,6 @@ class NotesFragment : Fragment() {
     private lateinit var viewModel: NoteViewModel
     private lateinit var notebookViewModel: NotebookViewModel
     private lateinit var adapter: NoteAdapter
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var addNoteFab: FloatingActionButton
-    private lateinit var tvNotesTitle: TextView
-    private lateinit var tvCollapsedTitle: TextView
-    private lateinit var tvNotesCount: TextView
-    private lateinit var appBarLayout: AppBarLayout
     private val args: NotesFragmentArgs by navArgs()
     private var currentNotebookName: String = "全部笔记"
 
@@ -55,7 +51,6 @@ class NotesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewModel()
-        initViews(view)
         setupRecyclerView()
         setupClickListeners()
         setupAppBarListener()
@@ -76,25 +71,16 @@ class NotesFragment : Fragment() {
         notebookViewModel.initDefaultNotebooks()
     }
 
-    private fun initViews(view: View) {
-        recyclerView = view.findViewById(R.id.notesRecyclerView)
-        addNoteFab = view.findViewById(R.id.addNoteFab)
-        tvNotesTitle = view.findViewById(R.id.tvNotesTitle)
-        tvCollapsedTitle = view.findViewById(R.id.tvCollapsedTitle)
-        tvNotesCount = view.findViewById(R.id.tvNotesCount)
-        appBarLayout = view.findViewById(R.id.appBarLayout)
-    }
-
     private fun setupRecyclerView() {
         adapter = NoteAdapter()
-        recyclerView.apply {
+        binding.notesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = this@NotesFragment.adapter
         }
     }
 
     private fun setupClickListeners() {
-        addNoteFab.setOnClickListener {
+        binding.addNoteFab.setOnClickListener {
             val action = NotesFragmentDirections.actionNotesFragmentToEditFragment(
                 notebookId = viewModel.currentNotebookId.value ?: 0L
             )
@@ -102,34 +88,18 @@ class NotesFragment : Fragment() {
         }
 
         binding.btnNotebookManager.setOnClickListener {
-            findNavController().navigate(R.id.action_notesFragment_to_notebookManagerFragment)
-        }
-
-        view?.findViewById<View>(R.id.searchButton)?.setOnClickListener {
-            // TODO: Implement search functionality
-        }
-
-        view?.findViewById<View>(R.id.settingsButton)?.setOnClickListener {
-            // TODO: Implement settings functionality
-        }
-
-        view?.findViewById<View>(R.id.layoutAllNotes)?.setOnClickListener {
-            // TODO: Show bottom sheet for tag management
-        }
-
-        binding.btnNotebookManager.setOnClickListener {
-            findNavController().navigate(R.id.action_notesFragment_to_notebookManagerFragment)
+            findNavController().navigate(R.id.action_notesFragment_to_notebookListFragment)
         }
     }
 
     private fun setupAppBarListener() {
-        appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+        binding.appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
             val maxScroll = appBarLayout.totalScrollRange
             val percentage = abs(verticalOffset).toFloat() / maxScroll.toFloat()
 
             // 控制标题的渐变效果
-            tvNotesTitle.alpha = 1 - percentage
-            tvCollapsedTitle.alpha = percentage
+            binding.tvNotesTitle.alpha = 1 - percentage
+            binding.tvCollapsedTitle.alpha = percentage
         })
     }
 
@@ -137,15 +107,15 @@ class NotesFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.notes.collect { notes ->
                 adapter.submitList(notes)
-                tvNotesCount.text = "${notes.size}篇笔记"
+                binding.tvNotesCount.text = "${notes.size}篇笔记"
             }
         }
     }
 
     private fun updateCollapsedTitle(notebookName: String) {
         currentNotebookName = notebookName
-        tvCollapsedTitle.text = notebookName
-        tvNotesTitle.text = notebookName
+        binding.tvCollapsedTitle.text = notebookName
+        binding.tvNotesTitle.text = notebookName
     }
 
     private fun observeNotebooks() {
@@ -181,14 +151,9 @@ class NotesFragment : Fragment() {
             try {
                 when (selectedNotebookId) {
                     -2L -> {
-                        binding.notebookChipGroup.check(NotebookChipHelper.CHIP_ALL_NOTES_ID)
+                        binding.notebookChipGroup.check(NotebookChipHelper.CHIP_ALL_NOTES_ID.toInt())
                         updateCollapsedTitle("全部笔记")
                         Log.d("wmt", "选中全部笔记标签")
-                    }
-                    -1L -> {
-                        binding.notebookChipGroup.check(NotebookChipHelper.CHIP_TODO_ID)
-                        updateCollapsedTitle("待办")
-                        Log.d("wmt", "选中待办标签")
                     }
                     else -> {
                         var found = false
@@ -206,7 +171,7 @@ class NotesFragment : Fragment() {
                             }
                         }
                         if (!found) {
-                            binding.notebookChipGroup.check(NotebookChipHelper.CHIP_ALL_NOTES_ID)
+                            binding.notebookChipGroup.check(NotebookChipHelper.CHIP_ALL_NOTES_ID.toInt())
                             viewModel.setCurrentNotebook(0L)
                             updateCollapsedTitle("全部笔记")
                             Log.d("wmt", "未找到对应笔记本，默认选中全部笔记")
@@ -215,15 +180,10 @@ class NotesFragment : Fragment() {
                 }
             } catch (e: Exception) {
                 Log.e("wmt", "设置选中状态失败: ${e.message}")
-                binding.notebookChipGroup.check(NotebookChipHelper.CHIP_ALL_NOTES_ID)
+                binding.notebookChipGroup.check(NotebookChipHelper.CHIP_ALL_NOTES_ID.toInt())
                 viewModel.setCurrentNotebook(0L)
                 updateCollapsedTitle("全部笔记")
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 } 

@@ -1,6 +1,7 @@
 package com.swu.myapplication.data.database
 
 import android.content.Context
+import android.icu.util.UniversalTimeScale.toLong
 import com.swu.myapplication.data.model.Note
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -8,6 +9,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
+/*
 object DatabaseInitializer {
     fun insertSampleData(context: Context) {
         val database = AppDatabase.getDatabase(context)
@@ -18,8 +20,7 @@ object DatabaseInitializer {
             Note(
                 title = "未来发展方向",
                 content = "刚刚考虑一下是否要考研 地方撒范德萨范德萨范德萨范德萨范德萨啊范德萨范德萨，总感觉不够用...",
-                createdAt = currentTime,
-                updatedAt = currentTime
+
             ),
             Note(
                 title = "大二下课程",
@@ -72,4 +73,5 @@ object DatabaseInitializer {
             }
         }
     }
-} 
+}
+*/
