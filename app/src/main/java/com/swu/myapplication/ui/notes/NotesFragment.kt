@@ -5,20 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
-import com.swu.myapplication.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlin.math.abs
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.chip.Chip
 import com.swu.myapplication.data.database.AppDatabase
 import com.swu.myapplication.data.repository.NoteRepository
@@ -26,7 +20,9 @@ import com.swu.myapplication.data.repository.NotebookRepository
 import com.swu.myapplication.databinding.FragmentNotesBinding
 import com.swu.myapplication.ui.notebook.NotebookChipHelper
 import com.swu.myapplication.ui.notebook.NotebookViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 class NotesFragment : Fragment() {
     private var _binding: FragmentNotesBinding? = null
@@ -35,9 +31,18 @@ class NotesFragment : Fragment() {
     private lateinit var notebookViewModel: NotebookViewModel
     private lateinit var adapter: NoteAdapter
     private val args: NotesFragmentArgs by navArgs()
-    private var currentNotebookName: String = "全部笔记"
 
-    private var isArgumentsHandled = false
+    // 将currentNotebookId改为ViewModel中的状态
+    private val currentNotebookId: Long
+        get() = viewModel.currentNotebookId.value
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupViewModel()
+
+        // 处理笔记本ID的恢复
+        handleNotebookSelection()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,12 +55,27 @@ class NotesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewModel()
         setupRecyclerView()
         setupClickListeners()
         setupAppBarListener()
+        
+        // 观察数据变化
         observeNotes()
         observeNotebooks()
+    }
+
+    private fun handleNotebookSelection() {
+        lifecycleScope.launch {
+            // 如果从其他Fragment传入了特定的笔记本ID
+            if (args.selectedNotebookId != -1L) {
+                viewModel.setCurrentNotebook(args.selectedNotebookId)
+            } else if (currentNotebookId == NotebookChipHelper.CHIP_ALL_NOTES_ID) {
+                // 如果当前没有选中的笔记本，使用上次保存的ID
+                val lastId = viewModel.currentNotebookId.first()
+                viewModel.setCurrentNotebook(lastId)
+            }
+            // 否则保持当前选中的笔记本
+        }
     }
 
     private fun setupViewModel() {
@@ -77,7 +97,6 @@ class NotesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = NoteAdapter { note ->
-            // 编辑已有笔记
             val action = NotesFragmentDirections.actionNotesFragmentToEditFragment(
                 notebookId = note.notebookId,
                 noteId = note.id
@@ -92,30 +111,26 @@ class NotesFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // 新建笔记按钮
         binding.addNoteFab.setOnClickListener {
             val action = NotesFragmentDirections.actionNotesFragmentToEditFragment(
-                notebookId = viewModel.currentNotebookId.value ?: -2L,
-                noteId = -1L  // -1表示新建笔记
+                notebookId = currentNotebookId,
+                noteId = -1L
             )
             findNavController().navigate(action)
         }
 
-        // 笔记本管理按钮
         binding.btnNotebookManager.setOnClickListener {
-            findNavController().navigate(R.id.action_notesFragment_to_notebookListFragment)
+            findNavController().navigate(NotesFragmentDirections.actionNotesFragmentToNotebookListFragment())
         }
     }
 
     private fun setupAppBarListener() {
-        binding.appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+        binding.appBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
             val maxScroll = appBarLayout.totalScrollRange
             val percentage = abs(verticalOffset).toFloat() / maxScroll.toFloat()
-
-            // 控制标题的渐变效果
             binding.tvNotesTitle.alpha = 1 - percentage
             binding.tvCollapsedTitle.alpha = percentage
-        })
+        }
     }
 
     private fun observeNotes() {
@@ -128,19 +143,21 @@ class NotesFragment : Fragment() {
     }
 
     private fun updateCollapsedTitle(notebookName: String) {
-        currentNotebookName = notebookName
         binding.tvCollapsedTitle.text = notebookName
         binding.tvNotesTitle.text = notebookName
     }
 
     private fun observeNotebooks() {
         notebookViewModel.allNotebooks.observe(viewLifecycleOwner) { notebooks ->
+            Log.d("NotesFragment", "1Notebooks: $currentNotebookId")
+
             NotebookChipHelper.updateChipGroup(
                 chipGroup = binding.notebookChipGroup,
                 notebooks = notebooks,
-                selectedNotebookId = args.selectedNotebookId,  // 传入选中的笔记本ID
+                selectedNotebookId = currentNotebookId,
                 onNotebookSelected = { selectedNotebookId ->
                     viewModel.setCurrentNotebook(selectedNotebookId)
+                    Log.d("NotesFragment", "2Notebooks: $currentNotebookId")
                     when (selectedNotebookId) {
                         NotebookChipHelper.CHIP_ALL_NOTES_ID -> updateCollapsedTitle("全部笔记")
                         else -> {

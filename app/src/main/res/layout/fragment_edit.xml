@@ -24,7 +24,7 @@
             android:padding="8dp"
             app:srcCompat="@drawable/ic_arrow_back" />
 
-    <TextView
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"

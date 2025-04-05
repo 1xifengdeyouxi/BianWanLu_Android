@@ -1,5 +1,6 @@
 package com.swu.myapplication.ui.edit
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -51,9 +52,13 @@ class EditFragment : Fragment() {
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupViewModel()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewModel()
         setupUI()
         setupTextWatchers()
         loadInitialData()
@@ -69,6 +74,7 @@ class EditFragment : Fragment() {
         viewModel = ViewModelProvider(this, factory)[NoteViewModel::class.java]
     }
 
+    @SuppressLint("RestrictedApi")
     private fun setupUI() {
         with(binding) {
             // 设置焦点和键盘
@@ -203,6 +209,7 @@ class EditFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        Log.d("EditFragment", "onDestroyView")
         _binding = null
         super.onDestroyView()
     }
