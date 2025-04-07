@@ -9,9 +9,6 @@ interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY modifiedTime DESC")
     fun getAllNotes(): Flow<List<Note>>
 
-    @Query("SELECT * FROM notes WHERE isTodo = 1 ORDER BY modifiedTime DESC")
-    fun getTodoNotes(): Flow<List<Note>>
-
     @Query("SELECT * FROM notes WHERE notebookId = :notebookId ORDER BY modifiedTime DESC")
     fun getNotesByNotebookId(notebookId: Long): Flow<List<Note>>
 

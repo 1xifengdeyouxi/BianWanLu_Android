@@ -1,5 +1,6 @@
 package com.swu.myapplication.ui.notes
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.chip.Chip
 import com.swu.myapplication.data.database.AppDatabase
+import com.swu.myapplication.data.model.Notebook
 import com.swu.myapplication.data.repository.NoteRepository
 import com.swu.myapplication.data.repository.NotebookRepository
 import com.swu.myapplication.databinding.FragmentNotesBinding
@@ -31,6 +33,7 @@ class NotesFragment : Fragment() {
     private lateinit var notebookViewModel: NotebookViewModel
     private lateinit var adapter: NoteAdapter
     private val args: NotesFragmentArgs by navArgs()
+    private lateinit var sortPopupWindow: NotesSortPopupWindow
 
     // 将currentNotebookId改为ViewModel中的状态
     private val currentNotebookId: Long
@@ -55,10 +58,16 @@ class NotesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupViewModel()
         setupRecyclerView()
         setupClickListeners()
         setupAppBarListener()
-        
+        // 初始化排序和编辑PopupWindow
+        setupSortPopupWindow()
+
+        // 处理笔记本ID的恢复
+        handleNotebookSelection()
+
         // 观察数据变化
         observeNotes()
         observeNotebooks()
@@ -69,10 +78,6 @@ class NotesFragment : Fragment() {
             // 如果从其他Fragment传入了特定的笔记本ID
             if (args.selectedNotebookId != -1L) {
                 viewModel.setCurrentNotebook(args.selectedNotebookId)
-            } else if (currentNotebookId == NotebookChipHelper.CHIP_ALL_NOTES_ID) {
-                // 如果当前没有选中的笔记本，使用上次保存的ID
-                val lastId = viewModel.currentNotebookId.first()
-                viewModel.setCurrentNotebook(lastId)
             }
             // 否则保持当前选中的笔记本
         }
@@ -110,6 +115,14 @@ class NotesFragment : Fragment() {
         }
     }
 
+    private fun setupSortPopupWindow() {
+        sortPopupWindow = NotesSortPopupWindow(requireContext())
+        sortPopupWindow.setOnSortTypeChangedListener { sortType ->
+            viewModel.setSortType(sortType)
+            adapter.updateSortType(sortType)
+        }
+    }
+
     private fun setupClickListeners() {
         binding.addNoteFab.setOnClickListener {
             val action = NotesFragmentDirections.actionNotesFragmentToEditFragment(
@@ -122,31 +135,72 @@ class NotesFragment : Fragment() {
         binding.btnNotebookManager.setOnClickListener {
             findNavController().navigate(NotesFragmentDirections.actionNotesFragmentToNotebookListFragment())
         }
+
+        // 添加排序按钮点击事件
+        binding.btnSort.setOnClickListener { view ->
+            sortPopupWindow.show(view)
+        }
     }
 
     private fun setupAppBarListener() {
+        var isToolbarShown = false
+        
+        // 监听AppBar的偏移变化
         binding.appBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
             val maxScroll = appBarLayout.totalScrollRange
             val percentage = abs(verticalOffset).toFloat() / maxScroll.toFloat()
-            binding.tvNotesTitle.alpha = 1 - percentage
+            
+            // 根据滚动百分比设置标题的透明度
             binding.tvCollapsedTitle.alpha = percentage
+            binding.tvNotesTitle.alpha = 1 - percentage
+            
+            // 处理工具栏显示状态
+            val shouldShowToolbar = percentage > 0.9f
+            if (isToolbarShown != shouldShowToolbar) {
+                isToolbarShown = shouldShowToolbar
+                binding.appBarLayout.isActivated = shouldShowToolbar
+                binding.toolbar.isActivated = shouldShowToolbar
+            }
         }
     }
 
     private fun observeNotes() {
         lifecycleScope.launch {
+            // 收集笔记列表更新
             viewModel.notes.collect { notes ->
                 adapter.submitList(notes)
-                binding.tvNotesCount.text = "${notes.size}篇笔记"
+                // 更新笔记数量显示
+                updateNotesCount(notes.size)
+                // 更新空视图状态
+                binding.emptyView.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
+            }
+        }
+
+        // 观察当前笔记本ID
+        lifecycleScope.launch {
+            viewModel.currentNotebookId.collect { notebookId ->
+                // 更新标题
+                val notebook = notebookViewModel.allNotebooks.value?.find { it.id == notebookId }
+                binding.tvNotesTitle.text = when (notebookId) {
+                    -2L -> "全部笔记"
+                    else -> notebook?.name ?: "全部笔记"
+                }
+                binding.tvCollapsedTitle.text = binding.tvNotesTitle.text
             }
         }
     }
 
-    private fun updateCollapsedTitle(notebookName: String) {
-        binding.tvCollapsedTitle.text = notebookName
-        binding.tvNotesTitle.text = notebookName
+    private fun updateNotesCount(count: Int) {
+        binding.tvNotesCount.text = "${count}篇笔记"
     }
 
+    override fun onResume() {
+        super.onResume()
+        // 每次返回到Fragment时刷新笔记列表
+        viewModel.refreshNotes()
+    }
+
+    @SuppressLint("SetTextI18n")
     private fun observeNotebooks() {
         notebookViewModel.allNotebooks.observe(viewLifecycleOwner) { notebooks ->
             Log.d("NotesFragment", "1Notebooks: $currentNotebookId")
@@ -159,14 +213,31 @@ class NotesFragment : Fragment() {
                     viewModel.setCurrentNotebook(selectedNotebookId)
                     Log.d("NotesFragment", "2Notebooks: $currentNotebookId")
                     when (selectedNotebookId) {
-                        NotebookChipHelper.CHIP_ALL_NOTES_ID -> updateCollapsedTitle("全部笔记")
+                        NotebookChipHelper.CHIP_ALL_NOTES_ID -> {
+                            updateCollapsedTitle("全部笔记")
+                            // 更新全部笔记数量
+                            val totalNotes = notebooks.sumOf { it.noteCount }
+                            binding.tvNotesCount.text = "${totalNotes}篇笔记"
+                        }
+                        //更新数量
                         else -> {
                             val notebook = notebooks.find { it.id == selectedNotebookId }
                             updateCollapsedTitle(notebook?.name ?: "全部笔记")
+                            updateTVNotes(notebook!!)
                         }
                     }
                 }
             )
         }
+    }
+
+    private fun updateCollapsedTitle(s: String) {
+        binding.tvCollapsedTitle.text = s
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateTVNotes(notebook: Notebook) {
+        val noteCount = notebook.noteCount
+        binding.tvNotesCount.text = "${noteCount}篇笔记"
     }
 } 

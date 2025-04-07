@@ -11,7 +11,7 @@
         <argument
             android:name="selectedNotebookId"
             app:argType="long"
-            android:defaultValue="-2L" />
+            android:defaultValue="-1L" />
         <action
             android:id="@+id/action_notesFragment_to_editFragment"
             app:destination="@id/editFragment" />
@@ -42,5 +42,16 @@
         <action
             android:id="@+id/action_notebookListFragment_to_notesFragment"
             app:destination="@id/notesFragment" />
+        <action
+            android:id="@+id/action_notebookListFragment_to_notebookManagerMenuFragment"
+            app:destination="@id/notebookManagerMenuFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/notebookManagerMenuFragment"
+        android:name="com.swu.myapplication.ui.notebook.NotebookManagerMenuFragment"
+        android:label="NotebookManagerMenuFragment" >
+        <action
+            android:id="@+id/action_notebookManagerMenuFragment_to_notebookListFragment"
+            app:destination="@id/notebookListFragment" />
     </fragment>
 </navigation>

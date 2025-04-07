@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_edit_notebook"
+        android:title="编辑笔记本" />
+    <item
+        android:id="@+id/action_delete_notebook"
+        android:title="删除笔记本" />
+</menu> 

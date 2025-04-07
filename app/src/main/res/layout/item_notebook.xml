@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:padding="16dp">
+
+    <!-- 笔记本图标 -->
+    <ImageView
+        android:id="@+id/ivNotebook"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_folder"
+        app:tint="#FFA500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 笔记本名称 -->
+    <TextView
+        android:id="@+id/tvNotebookName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvNoteCount"
+        app:layout_constraintStart_toEndOf="@id/ivNotebook"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 笔记数量 -->
+    <TextView
+        android:id="@+id/tvNoteCount"
+        android:layout_width="8dp"
+        android:layout_height="12dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        android:text="0篇笔记"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnMore"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 更多按钮 -->
+    <ImageButton
+        android:id="@+id/btnMore"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_more_vert"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout> 

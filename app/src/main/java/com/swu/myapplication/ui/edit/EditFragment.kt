@@ -70,8 +70,13 @@ class EditFragment : Fragment() {
         val database = AppDatabase.getDatabase(requireContext())
         val noteRepository = NoteRepository(database.noteDao())
         val notebookRepository = NotebookRepository(database.notebookDao())
-        val factory = NoteViewModel.Factory(noteRepository, notebookRepository)
-        viewModel = ViewModelProvider(this, factory)[NoteViewModel::class.java]
+        // 初始化NoteViewModel
+        val noteFactory = NoteViewModel.Factory(noteRepository, notebookRepository)
+        viewModel = ViewModelProvider(this, noteFactory)[NoteViewModel::class.java]
+
+        // 初始化NotebookViewModel
+        val notebookFactory = NotebookViewModel.Factory(notebookRepository)
+        notebookViewModel = ViewModelProvider(this, notebookFactory)[NotebookViewModel::class.java]
     }
 
     @SuppressLint("RestrictedApi")
@@ -139,6 +144,8 @@ class EditFragment : Fragment() {
                     viewModel.insertNote(newNote)
                     currentNote = newNote
                     isSaved = true
+                    // 更新笔记本中的笔记数量
+                    notebookViewModel.incrementNoteCount(args.notebookId)
                     showToast("创建笔记成功")
                 } else {
                     // 已经保存过，更新最近创建的笔记
