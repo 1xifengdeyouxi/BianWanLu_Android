@@ -47,7 +47,6 @@
                     android:text="0篇笔记"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="16sp" />
-
             </LinearLayout>
 
             <androidx.appcompat.widget.Toolbar
@@ -85,21 +84,58 @@
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="123"
+                            android:contentDescription="@string/search"
                             android:padding="8dp"
-                            android:src="@android:drawable/ic_menu_search" />
+                            android:src="@drawable/ic_search" />
 
                         <ImageButton
                             android:id="@+id/btnSort"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="123"
+                            android:contentDescription="@string/sort"
                             android:padding="8dp"
-                            android:src="@drawable/ic_more_vert"/>
+                            android:src="@drawable/ic_more_vert" />
                     </LinearLayout>
                 </RelativeLayout>
             </androidx.appcompat.widget.Toolbar>
+
+            <!-- 添加编辑模式的标题栏 -->
+            <LinearLayout
+                android:id="@+id/editModeToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_collapseMode="pin">
+
+                <TextView
+                    android:id="@+id/btnCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:text="取消"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/tvEditTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="选择笔记"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/btnComplete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:text="完成"
+                    android:textColor="@color/black" />
+            </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         <!-- 标签栏（固定不折叠） -->
@@ -134,7 +170,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     app:singleSelection="true" />
-
             </LinearLayout>
         </HorizontalScrollView>
     </com.google.android.material.appbar.AppBarLayout>
@@ -166,7 +201,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/ic_empty_notes"
-            android:contentDescription="ic_empty_notes" />
+            android:contentDescription="@string/empty_notes_image" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -175,7 +210,37 @@
             android:text="@string/empty_notes_message"
             android:textAlignment="center"
             android:textSize="16sp" />
+    </LinearLayout>
 
+    <!-- 添加底部操作栏 -->
+    <LinearLayout
+        android:id="@+id/bottomActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btnMove"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="移动" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="删除" />
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -184,7 +249,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="添加"
-        android:src="@drawable/ic_add" />
+        android:contentDescription="@string/add_note"
+        app:srcCompat="@drawable/ic_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout> 

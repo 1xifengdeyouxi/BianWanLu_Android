@@ -120,12 +120,20 @@ class NoteViewModel(
                 notes.sortedByDescending { it.modifiedTime }
             }
 
-            NotesSortPopupWindow.SortType.EDIT_NOTES -> {
+            NotesSortPopupWindow.SortType.EDIT -> {
                 //编辑笔记
                 TODO()
             }
         }
         _notes.value = sortedNotes
+    }
+
+    fun deleteNotes(notes: List<Note>) = viewModelScope.launch {
+        notes.forEach { note ->
+            repository.delete(note)
+            updateNoteCount(note.notebookId)
+        }
+        refreshNotes()
     }
 
     class Factory(

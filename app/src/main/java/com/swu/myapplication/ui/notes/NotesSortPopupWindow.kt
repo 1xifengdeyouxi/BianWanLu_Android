@@ -1,71 +1,58 @@
 package com.swu.myapplication.ui.notes
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import com.google.android.material.internal.ViewUtils.dpToPx
 import com.swu.myapplication.databinding.PopupNotesSortBinding
+import com.swu.myapplication.myUtils.dp2px
 
-class NotesSortPopupWindow(context: Context) {
-    private val binding: PopupNotesSortBinding = PopupNotesSortBinding.inflate(LayoutInflater.from(context))
-    private val popupWindow: PopupWindow
-    private var currentSortType: SortType = SortType.MODIFY_TIME
+class NotesSortPopupWindow(context: Context) : PopupWindow(context) {
+    private val binding: PopupNotesSortBinding
     private var onSortTypeChangedListener: ((SortType) -> Unit)? = null
 
     init {
-        // 设置PopupWindow的属性
-        popupWindow = PopupWindow(
-            binding.root,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply {
-            isOutsideTouchable = true
-            isFocusable = true
-            elevation = 10f
-        }
+        // 初始化布局
+        binding = PopupNotesSortBinding.inflate(LayoutInflater.from(context))
+        contentView = binding.root
 
-        // 设置点击监听
+        // 设置弹窗属性
+        width = context.dp2px(160)
+        height = ViewGroup.LayoutParams.WRAP_CONTENT
+        isFocusable = true
+        isOutsideTouchable = true
+        setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        // 设置点击事件
         setupClickListeners()
-        // 初始化UI状态
-        updateSortTypeUI(currentSortType)
     }
 
     private fun setupClickListeners() {
-        binding.layoutCreateTime.setOnClickListener {
+        binding.optionCreateTime.setOnClickListener {
             updateSortType(SortType.CREATE_TIME)
-            onSortTypeChangedListener?.invoke(SortType.CREATE_TIME)
-            dismiss()
         }
 
-        binding.layoutModifyTime.setOnClickListener {
+        binding.optionModifyTime.setOnClickListener {
             updateSortType(SortType.MODIFY_TIME)
-            onSortTypeChangedListener?.invoke(SortType.MODIFY_TIME)
-            dismiss()
         }
-        binding.layoutEditNotes.setOnClickListener {
-            onSortTypeChangedListener?.invoke(SortType.MODIFY_TIME)
-            dismiss()
+
+        binding.optionEdit.setOnClickListener {
+            updateSortType(SortType.EDIT)
         }
     }
 
     private fun updateSortType(sortType: SortType) {
-        currentSortType = sortType
-        updateSortTypeUI(sortType)
-    }
+        // 更新UI
+        binding.ivCreateTimeCheck.visibility = if (sortType == SortType.CREATE_TIME) View.VISIBLE else View.GONE
+        binding.ivModifyTimeCheck.visibility = if (sortType == SortType.MODIFY_TIME) View.VISIBLE else View.GONE
 
-    private fun updateSortTypeUI(sortType: SortType) {
-        binding.ivCreateTime.visibility = if (sortType == SortType.CREATE_TIME) View.VISIBLE else View.INVISIBLE
-        binding.ivModifyTime.visibility = if (sortType == SortType.MODIFY_TIME) View.VISIBLE else View.INVISIBLE
-    }
-
-    fun show(anchor: View) {
-        // 计算弹出位置，显示在按钮下方
-        popupWindow.showAsDropDown(anchor)
-    }
-
-    private fun dismiss() {
-        popupWindow.dismiss()
+        // 通知监听器
+        onSortTypeChangedListener?.invoke(sortType)
+        dismiss()
     }
 
     fun setOnSortTypeChangedListener(listener: (SortType) -> Unit) {
@@ -75,6 +62,6 @@ class NotesSortPopupWindow(context: Context) {
     enum class SortType {
         CREATE_TIME,
         MODIFY_TIME,
-        EDIT_NOTES
+        EDIT
     }
 } 

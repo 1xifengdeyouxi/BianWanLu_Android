@@ -1,6 +1,7 @@
 package com.swu.myapplication.ui.notes
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -15,10 +16,25 @@ class NoteAdapter(
 ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallback()) {
 
     private var currentSortType = NotesSortPopupWindow.SortType.MODIFY_TIME
+    private var isEditMode = false
+    private val selectedNotes = mutableSetOf<Note>()
+    private var onSelectionChanged: ((Int) -> Unit)? = null
 
     fun updateSortType(sortType: NotesSortPopupWindow.SortType) {
         currentSortType = sortType
         notifyDataSetChanged()
+    }
+
+    fun setEditMode(editMode: Boolean) {
+        isEditMode = editMode
+        selectedNotes.clear()
+        notifyDataSetChanged()
+    }
+
+    fun getSelectedNotes(): Set<Note> = selectedNotes.toSet()
+
+    fun setOnSelectionChangedListener(listener: (Int) -> Unit) {
+        onSelectionChanged = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -56,14 +72,31 @@ class NoteAdapter(
                 val timeToShow = when (currentSortType) {
                     NotesSortPopupWindow.SortType.CREATE_TIME -> note.createdTime
                     NotesSortPopupWindow.SortType.MODIFY_TIME -> note.modifiedTime
-                    NotesSortPopupWindow.SortType.EDIT_NOTES -> {
+                    NotesSortPopupWindow.SortType.EDIT -> {
                         TODO()
                     }
                 }
                 tvTime.text = formatTime(timeToShow)
 
+                checkBox.apply {
+                    visibility = if (isEditMode) View.VISIBLE else View.GONE
+                    isChecked = selectedNotes.contains(note)
+                    setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) {
+                            selectedNotes.add(note)
+                        } else {
+                            selectedNotes.remove(note)
+                        }
+                        onSelectionChanged?.invoke(selectedNotes.size)
+                    }
+                }
+
                 root.setOnClickListener {
-                    onNoteClick(note)
+                    if (isEditMode) {
+                        checkBox.isChecked = !checkBox.isChecked
+                    } else {
+                        onNoteClick(note)
+                    }
                 }
             }
         }

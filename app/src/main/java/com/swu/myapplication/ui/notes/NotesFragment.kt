@@ -3,18 +3,17 @@ package com.swu.myapplication.ui.notes
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.chip.Chip
 import com.swu.myapplication.data.database.AppDatabase
 import com.swu.myapplication.data.model.Notebook
 import com.swu.myapplication.data.repository.NoteRepository
@@ -22,7 +21,6 @@ import com.swu.myapplication.data.repository.NotebookRepository
 import com.swu.myapplication.databinding.FragmentNotesBinding
 import com.swu.myapplication.ui.notebook.NotebookChipHelper
 import com.swu.myapplication.ui.notebook.NotebookViewModel
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
@@ -34,6 +32,7 @@ class NotesFragment : Fragment() {
     private lateinit var adapter: NoteAdapter
     private val args: NotesFragmentArgs by navArgs()
     private lateinit var sortPopupWindow: NotesSortPopupWindow
+    private var isEditMode = false
 
     // 将currentNotebookId改为ViewModel中的状态
     private val currentNotebookId: Long
@@ -58,15 +57,11 @@ class NotesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewModel()
         setupRecyclerView()
         setupClickListeners()
         setupAppBarListener()
         // 初始化排序和编辑PopupWindow
         setupSortPopupWindow()
-
-        // 处理笔记本ID的恢复
-        handleNotebookSelection()
 
         // 观察数据变化
         observeNotes()
@@ -118,8 +113,37 @@ class NotesFragment : Fragment() {
     private fun setupSortPopupWindow() {
         sortPopupWindow = NotesSortPopupWindow(requireContext())
         sortPopupWindow.setOnSortTypeChangedListener { sortType ->
-            viewModel.setSortType(sortType)
-            adapter.updateSortType(sortType)
+            when (sortType) {
+                NotesSortPopupWindow.SortType.CREATE_TIME -> {
+                    viewModel.setSortType(NotesSortPopupWindow.SortType.CREATE_TIME)
+                }
+                NotesSortPopupWindow.SortType.MODIFY_TIME -> {
+                    viewModel.setSortType(NotesSortPopupWindow.SortType.MODIFY_TIME)
+                }
+                NotesSortPopupWindow.SortType.EDIT -> {
+                    toggleEditMode(true)
+                }
+            }
+        }
+
+        binding.btnSort.setOnClickListener { view ->
+            if (sortPopupWindow.isShowing) {
+                sortPopupWindow.dismiss()
+            } else {
+                // 计算弹窗显示位置
+                val location = IntArray(2)
+                view.getLocationOnScreen(location)
+                val x = location[0] - (sortPopupWindow.width - view.width) / 2
+                val y = location[1] + view.height
+
+                // 显示弹窗
+                sortPopupWindow.showAtLocation(
+                    binding.root,
+                    Gravity.NO_GRAVITY,
+                    x,
+                    y
+                )
+            }
         }
     }
 
@@ -136,9 +160,27 @@ class NotesFragment : Fragment() {
             findNavController().navigate(NotesFragmentDirections.actionNotesFragmentToNotebookListFragment())
         }
 
-        // 添加排序按钮点击事件
-        binding.btnSort.setOnClickListener { view ->
-            sortPopupWindow.show(view)
+        // 编辑模式按钮点击事件
+        binding.btnCancel.setOnClickListener {
+            toggleEditMode(false)
+        }
+
+        binding.btnComplete.setOnClickListener {
+            toggleEditMode(false)
+        }
+
+        binding.btnDelete.setOnClickListener {
+            val selectedNotes = adapter.getSelectedNotes()
+            if (selectedNotes.isNotEmpty()) {
+                // 删除选中的笔记
+                viewModel.deleteNotes(selectedNotes.toList())
+                toggleEditMode(false)
+            }
+        }
+
+        // 设置选择变化监听
+        adapter.setOnSelectionChangedListener { selectedCount ->
+            updateBottomButtons()
         }
     }
 
@@ -239,5 +281,33 @@ class NotesFragment : Fragment() {
     private fun updateTVNotes(notebook: Notebook) {
         val noteCount = notebook.noteCount
         binding.tvNotesCount.text = "${noteCount}篇笔记"
+    }
+
+    private fun toggleEditMode(enabled: Boolean) {
+        isEditMode = enabled
+        
+        // 更新界面
+        binding.apply {
+            // 标准模式组件
+            tvCollapsedTitle.isVisible = !enabled
+            searchButton.isVisible = !enabled
+            btnSort.isVisible = !enabled
+            
+            // 编辑模式组件
+            editModeToolbar.isVisible = enabled
+            bottomActionBar.isVisible = enabled
+        }
+        
+        // 更新适配器
+        adapter.setEditMode(enabled)
+        
+        // 更新底部按钮状态
+        updateBottomButtons()
+    }
+
+    private fun updateBottomButtons() {
+        val selectedCount = adapter.getSelectedNotes().size
+        binding.btnDelete.isEnabled = selectedCount > 0
+        binding.btnMove.isEnabled = selectedCount > 0
     }
 } 
