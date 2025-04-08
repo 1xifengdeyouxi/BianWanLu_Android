@@ -24,6 +24,10 @@ class NoteViewModel(
     // 排序相关
     private var currentSortType = NotesSortPopupWindow.SortType.MODIFY_TIME
 
+    // 搜索相关
+    private val _searchResults = MutableStateFlow<List<Note>>(emptyList())
+    val searchResults: StateFlow<List<Note>> = _searchResults
+
     init {
         viewModelScope.launch {
             currentNotebookId.collect { notebookId ->
@@ -69,8 +73,20 @@ class NoteViewModel(
     }
 
     // 搜索笔记
-    fun searchNotes(query: String) = viewModelScope.launch {
-        // TODO: 实现笔记搜索功能
+    fun searchNotes(query: String) {
+        viewModelScope.launch {
+            if (query.isBlank()) {
+                _searchResults.value = emptyList()
+                return@launch
+            }
+            
+            val allNotes = repository.getAllNotes().first()
+            val filteredNotes = allNotes.filter { note ->
+                note.title.contains(query, ignoreCase = true) || 
+                note.content.contains(query, ignoreCase = true)
+            }
+            _searchResults.value = filteredNotes
+        }
     }
 
     // 根据ID获取笔记
@@ -134,6 +150,10 @@ class NoteViewModel(
             updateNoteCount(note.notebookId)
         }
         refreshNotes()
+    }
+
+    fun clearSearch() {
+        _searchResults.value = emptyList()
     }
 
     class Factory(

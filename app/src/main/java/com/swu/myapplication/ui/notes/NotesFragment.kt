@@ -21,8 +21,10 @@ import com.swu.myapplication.data.repository.NotebookRepository
 import com.swu.myapplication.databinding.FragmentNotesBinding
 import com.swu.myapplication.ui.notebook.NotebookChipHelper
 import com.swu.myapplication.ui.notebook.NotebookViewModel
+import com.swu.myapplication.ui.search.SearchManager
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import androidx.activity.addCallback
 
 class NotesFragment : Fragment() {
     private var _binding: FragmentNotesBinding? = null
@@ -33,6 +35,7 @@ class NotesFragment : Fragment() {
     private val args: NotesFragmentArgs by navArgs()
     private lateinit var sortPopupWindow: NotesSortPopupWindow
     private var isEditMode = false
+    private lateinit var searchManager: SearchManager
 
     // 将currentNotebookId改为ViewModel中的状态
     private val currentNotebookId: Long
@@ -62,6 +65,9 @@ class NotesFragment : Fragment() {
         setupAppBarListener()
         // 初始化排序和编辑PopupWindow
         setupSortPopupWindow()
+        
+        // 初始化搜索管理器
+        setupSearchManager()
 
         // 观察数据变化
         observeNotes()
@@ -206,6 +212,43 @@ class NotesFragment : Fragment() {
         }
     }
 
+    private fun setupSearchManager() {
+        searchManager = SearchManager(
+            context = requireContext(),
+            rootView = binding.root as ViewGroup,
+            viewModel = viewModel,
+            lifecycleScope = lifecycleScope,
+            onNoteClicked = { note ->
+                val action = NotesFragmentDirections.actionNotesFragmentToEditFragment(
+                    notebookId = note.notebookId,
+                    noteId = note.id
+                )
+                findNavController().navigate(action)
+            },
+            onSearchClosed = {
+                // 恢复其他UI元素
+                binding.appBarLayout.visibility = View.VISIBLE
+                binding.notesRecyclerView.visibility = View.VISIBLE
+                binding.addNoteFab.visibility = View.VISIBLE
+                binding.emptyView.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+            }
+        )
+        
+        // 设置搜索按钮点击事件
+        binding.searchButton.setOnClickListener {
+            if (!isEditMode) {
+                // 隐藏其他UI元素
+                binding.appBarLayout.visibility = View.GONE
+                binding.notesRecyclerView.visibility = View.GONE
+                binding.addNoteFab.visibility = View.GONE
+                binding.emptyView.visibility = View.GONE
+                
+                // 显示搜索界面
+                searchManager.showSearch()
+            }
+        }
+    }
+
     private fun observeNotes() {
         lifecycleScope.launch {
             // 收集笔记列表更新
@@ -240,6 +283,15 @@ class NotesFragment : Fragment() {
         super.onResume()
         // 每次返回到Fragment时刷新笔记列表
         viewModel.refreshNotes()
+        
+        // 添加返回键处理
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            when {
+                searchManager.isVisible() -> searchManager.hideSearch()
+                isEditMode -> toggleEditMode(false)
+                else -> isEnabled = false
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")

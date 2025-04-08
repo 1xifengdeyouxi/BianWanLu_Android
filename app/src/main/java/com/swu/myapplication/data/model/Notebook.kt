@@ -17,4 +17,3 @@ data class Notebook(
         const val ALL_NOTEBOOK_ID = -2L
     }
 }
-
