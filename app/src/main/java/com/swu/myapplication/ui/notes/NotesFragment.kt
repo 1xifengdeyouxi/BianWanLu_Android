@@ -25,6 +25,8 @@ import com.swu.myapplication.ui.search.SearchManager
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import androidx.activity.addCallback
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.swu.myapplication.R
 
 class NotesFragment : Fragment() {
     private var _binding: FragmentNotesBinding? = null
@@ -213,9 +215,13 @@ class NotesFragment : Fragment() {
     }
 
     private fun setupSearchManager() {
+        // 获取底部导航栏
+        val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        
         searchManager = SearchManager(
             context = requireContext(),
             rootView = binding.root as ViewGroup,
+            bottomNav = bottomNav,
             viewModel = viewModel,
             lifecycleScope = lifecycleScope,
             onNoteClicked = { note ->
