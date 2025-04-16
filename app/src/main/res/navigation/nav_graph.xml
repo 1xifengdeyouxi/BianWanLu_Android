@@ -92,9 +92,6 @@
         <action
             android:id="@+id/action_timerFragment_to_createTimerFragment"
             app:destination="@id/createTimerFragment" />
-        <action
-            android:id="@+id/action_timerFragment_to_presetSelectionFragment"
-            app:destination="@id/presetSelectionFragment" />
     </fragment>
 
     <fragment
@@ -106,34 +103,17 @@
             android:id="@+id/action_createTimerFragment_to_timerFragment"
             app:destination="@id/timerFragment" />
         <action
-            android:id="@+id/action_createTimerFragment_to_durationSelectorFragment"
-            app:destination="@id/durationSelectorFragment" />
-        <action
-            android:id="@+id/action_createTimerFragment_to_presetSelectionFragment"
-            app:destination="@id/presetSelectionFragment" />
+            android:id="@+id/action_createTimerFragment_to_durationPickerFragment"
+            app:destination="@id/durationPickerFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/durationSelectorFragment"
-        android:name="com.swu.myapplication.ui.timer.DurationSelectorFragment"
+        android:id="@+id/durationPickerFragment"
+        android:name="com.swu.myapplication.ui.timer.DurationPickerFragment"
         android:label="使用时长"
-        tools:layout="@layout/fragment_duration_selector">
-        <argument
-            android:name="current_duration"
-            android:defaultValue="30"
-            app:argType="integer" />
-    </fragment>
-    
-    <fragment
-        android:id="@+id/presetSelectionFragment"
-        android:name="com.swu.myapplication.ui.preset.PresetSelectionFragment"
-        android:label="选择预设时长"
-        tools:layout="@layout/fragment_preset_selection">
+        tools:layout="@layout/fragment_duration_picker">
         <action
-            android:id="@+id/action_presetSelectionFragment_to_timerFragment"
-            app:destination="@id/timerFragment" />
-        <action
-            android:id="@+id/action_presetSelectionFragment_to_createTimerFragment"
+            android:id="@+id/action_durationPickerFragment_to_createTimerFragment"
             app:destination="@id/createTimerFragment" />
     </fragment>
 </navigation>
