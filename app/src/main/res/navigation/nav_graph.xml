@@ -76,5 +76,64 @@
         <action
             android:id="@+id/action_nav_profile_to_notesFragment"
             app:destination="@id/notesFragment" />
+        <action
+            android:id="@+id/action_nav_profile_to_timerFragment"
+            app:destination="@id/timerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/timerFragment"
+        android:name="com.swu.myapplication.ui.timer.TimerFragment"
+        android:label="番茄时间"
+        tools:layout="@layout/fragment_timer" >
+        <action
+            android:id="@+id/action_timerFragment_to_nav_profile"
+            app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_timerFragment_to_createTimerFragment"
+            app:destination="@id/createTimerFragment" />
+        <action
+            android:id="@+id/action_timerFragment_to_presetSelectionFragment"
+            app:destination="@id/presetSelectionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createTimerFragment"
+        android:name="com.swu.myapplication.ui.timer.CreateTimerFragment"
+        android:label="创建时钟"
+        tools:layout="@layout/fragment_create_timer">
+        <action
+            android:id="@+id/action_createTimerFragment_to_timerFragment"
+            app:destination="@id/timerFragment" />
+        <action
+            android:id="@+id/action_createTimerFragment_to_durationSelectorFragment"
+            app:destination="@id/durationSelectorFragment" />
+        <action
+            android:id="@+id/action_createTimerFragment_to_presetSelectionFragment"
+            app:destination="@id/presetSelectionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/durationSelectorFragment"
+        android:name="com.swu.myapplication.ui.timer.DurationSelectorFragment"
+        android:label="使用时长"
+        tools:layout="@layout/fragment_duration_selector">
+        <argument
+            android:name="current_duration"
+            android:defaultValue="30"
+            app:argType="integer" />
+    </fragment>
+    
+    <fragment
+        android:id="@+id/presetSelectionFragment"
+        android:name="com.swu.myapplication.ui.preset.PresetSelectionFragment"
+        android:label="选择预设时长"
+        tools:layout="@layout/fragment_preset_selection">
+        <action
+            android:id="@+id/action_presetSelectionFragment_to_timerFragment"
+            app:destination="@id/timerFragment" />
+        <action
+            android:id="@+id/action_presetSelectionFragment_to_createTimerFragment"
+            app:destination="@id/createTimerFragment" />
     </fragment>
 </navigation>
