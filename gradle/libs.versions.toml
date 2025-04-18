@@ -26,6 +26,7 @@ smarttable = "2.2.0"
 jsoups = "1.14.3"
 okhttp = "4.12.0"
 gson = "2.12.1"
+commonVersion = "4.1.14"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -87,6 +88,13 @@ json = { group = "org.jsoup", name = "jsoup", version.ref = "jsoups" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 #implementation 'com.google.code.gson:gson:2.12.1'
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+#implementation 'com.github.gzu-liyujiang.AndroidPicker:Common:<version>'
+android-picker = { group = "com.github.gzu-liyujiang.AndroidPicker", name = "Common", version.ref = "commonVersion" }
+#implementation 'com.github.gzu-liyujiang.AndroidPicker:WheelView:<version>'
+android-picker-wheelview = { group = "com.github.gzu-liyujiang.AndroidPicker", name = "WheelView", version.ref = "commonVersion" }
+#implementation 'com.github.gzu-liyujiang.AndroidPicker:WheelPicker:<version>'
+android-picker-wheelview-picker = { group = "com.github.gzu-liyujiang.AndroidPicker", name = "WheelPicker", version.ref = "commonVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

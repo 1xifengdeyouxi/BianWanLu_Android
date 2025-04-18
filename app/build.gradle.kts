@@ -102,4 +102,11 @@ dependencies {
     implementation(libs.json)
     implementation(libs.okhttp)
     implementation(libs.gson)
+
+    //所有选择器的基础窗体（用于自定义弹窗）
+    implementation(libs.android.picker)
+    //滚轮选择器的滚轮控件（用于自定义滚轮选择器）
+    implementation(libs.android.picker.wheelview)
+    //单项/数字、二三级联动、日期/时间等滚轮选择器
+    implementation(libs.android.picker.wheelview.picker)
 }
