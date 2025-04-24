@@ -79,6 +79,9 @@
         <action
             android:id="@+id/action_nav_profile_to_timerFragment"
             app:destination="@id/timerFragment" />
+        <action
+            android:id="@+id/action_nav_profile_to_gameListFragment"
+            app:destination="@id/gameListFragment" />
     </fragment>
 
     <fragment
@@ -92,6 +95,19 @@
         <action
             android:id="@+id/action_timerFragment_to_createTimerFragment"
             app:destination="@id/createTimerFragment" />
+        <action
+            android:id="@+id/action_timerFragment_to_runningTimerFragment"
+            app:destination="@id/runningTimerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/runningTimerFragment"
+        android:name="com.swu.myapplication.ui.timer.RunningTimerFragment"
+        android:label="计时器"
+        tools:layout="@layout/fragment_running_timer">
+        <action
+            android:id="@+id/action_runningTimerFragment_to_timerFragment"
+            app:destination="@id/timerFragment" />
     </fragment>
 
     <fragment
@@ -105,6 +121,9 @@
         <action
             android:id="@+id/action_createTimerFragment_to_durationPickerFragment"
             app:destination="@id/durationPickerFragment" />
+        <action
+            android:id="@+id/action_createTimerFragment_to_atmospherePickerFragment"
+            app:destination="@id/atmospherePickerFragment" />
     </fragment>
 
     <fragment
@@ -115,5 +134,38 @@
         <action
             android:id="@+id/action_durationPickerFragment_to_createTimerFragment"
             app:destination="@id/createTimerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/atmospherePickerFragment"
+        android:name="com.swu.myapplication.ui.timer.AtmospherePickerFragment"
+        android:label="AtmospherePickerFragment" >
+        <action
+            android:id="@+id/action_atmospherePickerFragment_to_createTimerFragment"
+            app:destination="@id/createTimerFragment" />
+    </fragment>
+    
+    <!-- 游戏列表界面 -->
+    <fragment
+        android:id="@+id/gameListFragment"
+        android:name="com.swu.myapplication.ui.game.GameListFragment"
+        android:label="小游戏"
+        tools:layout="@layout/fragment_game_list" >
+        <action
+            android:id="@+id/action_gameListFragment_to_nav_profile"
+            app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_gameListFragment_to_game2048Fragment"
+            app:destination="@id/game2048Fragment" />
+    </fragment>
+    
+    <!-- 2048游戏界面 -->
+    <fragment
+        android:id="@+id/game2048Fragment"
+        android:name="com.swu.myapplication.ui.game.Game2048Fragment"
+        android:label="2048"
+        tools:layout="@layout/fragment_game_2048" >
+        <action
+            android:id="@+id/action_game2048Fragment_to_gameListFragment"
+            app:destination="@id/gameListFragment" />
     </fragment>
 </navigation>

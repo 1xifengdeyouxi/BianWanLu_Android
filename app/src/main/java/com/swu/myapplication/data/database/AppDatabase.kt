@@ -7,18 +7,20 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.swu.myapplication.data.dao.NoteDao
 import com.swu.myapplication.data.dao.NotebookDao
+import com.swu.myapplication.data.dao.SegmentDao
+import com.swu.myapplication.data.dao.TimerDao
 import com.swu.myapplication.data.dao.TodoDao
 import com.swu.myapplication.data.dao.TodoCategoryDao
+import com.swu.myapplication.data.entity.Timer
 import com.swu.myapplication.data.model.Note
 import com.swu.myapplication.data.model.Notebook
 import com.swu.myapplication.data.model.Segment
 import com.swu.myapplication.data.model.Todo
 import com.swu.myapplication.data.model.TodoCategory
-import com.swu.myapplication.data.dao.SegmentDao
 
 @Database(
-    entities = [Note::class, Segment::class, Notebook::class, Todo::class, TodoCategory::class],
-    version = 2,
+    entities = [Note::class, Segment::class, Notebook::class, Todo::class, TodoCategory::class, Timer::class],
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -28,6 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun notebookDao(): NotebookDao
     abstract fun todoDao(): TodoDao
     abstract fun todoCategoryDao(): TodoCategoryDao
+    abstract fun timerDao(): TimerDao
 
     companion object {
         @Volatile
