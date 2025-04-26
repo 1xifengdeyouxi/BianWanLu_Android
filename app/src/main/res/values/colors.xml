@@ -4,10 +4,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#FF808080</color>
     <!-- 2048游戏格子颜色 -->
-    <color name="cell_empty">#CCC0B3</color>
-    <color name="cell_2">#EEE4DA</color>
-    <color name="cell_4">#EDE0C8</color>
-    <color name="cell_8">#F2B179</color>
+    <color name="cell_empty">#CBC1B0</color>
+    <color name="cell_2">#F0E8D8</color>
+    <color name="cell_4">#EEE4D6</color>
+    <color name="cell_8">#F5B27F</color>
     <color name="cell_16">#F59563</color>
     <color name="cell_32">#F67C5F</color>
     <color name="cell_64">#F65E3B</color>

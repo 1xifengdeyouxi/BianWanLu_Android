@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.safe.args)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.kapt)
+
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -13,13 +15,15 @@ android {
     compileSdk = 35
 
     buildFeatures {
+        compose  = true
         viewBinding = true
         buildConfig = true
+        dataBinding = true
     }
     defaultConfig {
         applicationId = "com.swu.myapplication"
-        minSdk = 26
-        targetSdk = 34
+        minSdk = 30
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -36,11 +40,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
 
@@ -110,4 +114,21 @@ dependencies {
     implementation(libs.android.picker.wheelview)
     //单项/数字、二三级联动、日期/时间等滚轮选择器
     implementation(libs.android.picker.wheelview.picker)
+
+    val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    //implementation "androidx.activity:activity-compose:$latestVersion" // 最新稳定版
+    implementation(libs.androidx.activity.compose)
+
+    implementation(libs.androidx.compose.ui)
+//    implementation "androidx.compose.animation:animation:1.8.0"
+    implementation(libs.androidx.compose.animation)
+//    implementation "androidx.compose.material:material:1.8.0"
+    implementation(libs.androidx.compose.material)
+//debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation(libs.androidx.compose.ui.tooling)
+//    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }

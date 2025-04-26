@@ -8,6 +8,18 @@
     <string name="search">查询按钮</string>
     <string name="sort">弹窗显示</string>
 
+    <string name="app_name_short">2048</string>
+
+
+    <string name="header_score">分数</string>
+    <string name="header_best">最高分数</string>
+
+    <string name="sub_header_new_game">新游戏</string>
+
+    <string name="popup_message_win">你赢了</string>
+    <string name="popup_message_game_over">游戏结束</string>
+    <string name="popup_try_again">再来一局</string>
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
