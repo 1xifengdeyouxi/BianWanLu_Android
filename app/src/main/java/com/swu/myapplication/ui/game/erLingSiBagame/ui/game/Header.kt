@@ -1,6 +1,7 @@
 package com.swu.myapplication.ui.game.erLingSiBagame.ui.game
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -19,8 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.swu.myapplication.R
 import com.swu.myapplication.ui.game.erLingSiBagame.resolve
 import com.swu.myapplication.ui.game.erLingSiBagame.ui.theme.Compose2048Theme
@@ -34,29 +37,14 @@ fun Header(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
     ) {
-        HeaderTitle()
         HeaderPanel(title = R.string.header_score.resolve(), value = score.toString())
-        Spacer(modifier = Modifier.requiredWidth(headerSpacing.dp))
+        Spacer(modifier = Modifier.requiredWidth(8.dp))
         HeaderPanel(title = R.string.header_best.resolve(), value = bestScore.toString())
     }
-}
-
-@Composable
-fun RowScope.HeaderTitle(
-    modifier: Modifier = Modifier
-) {
-    Text(
-        modifier = modifier.weight(1f),
-        text = R.string.app_name_short.resolve(),
-        style = MaterialTheme.typography.h3,
-        fontWeight = FontWeight.ExtraBold,
-        color = Primary
-    )
 }
 
 @Composable
@@ -67,27 +55,29 @@ fun HeaderPanel(
 ) {
     Box(
         modifier = modifier
-            .wrapContentWidth(unbounded = true)
-            .requiredHeight(panelHeight.dp)
-            .shadow(2.dp, RoundedCornerShape(panelCornerRadius.dp))
-            .clip(RoundedCornerShape(panelCornerRadius.dp))
-            .background(Primary, RoundedCornerShape(panelCornerRadius.dp))
-            .padding(horizontal = panelPadding.dp),
+            .wrapContentWidth()
+            .requiredHeight(60.dp)
+            .requiredWidth(80.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Primary, RoundedCornerShape(8.dp))
+            .padding(4.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = title.uppercase(),
-            style = MaterialTheme.typography.body2,
+            text = title,
+            fontSize = 14.sp,
             color = TileLightText,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 6.dp)
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.body1,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = TileLightText,
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 6.dp)
@@ -102,8 +92,3 @@ private fun HeaderPreview() {
         Header(score = 128, bestScore = 65536)
     }
 }
-
-private const val headerSpacing = 8
-private const val panelHeight = 56
-private const val panelPadding = 12
-private const val panelCornerRadius = 6
