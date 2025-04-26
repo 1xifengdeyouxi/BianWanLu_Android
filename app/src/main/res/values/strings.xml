@@ -19,6 +19,18 @@
     <string name="popup_message_win">你赢了</string>
     <string name="popup_message_game_over">游戏结束</string>
     <string name="popup_try_again">再来一局</string>
+    
+    <!-- 滑动拼图游戏相关字符串 -->
+    <string name="sliding_puzzle_title">滑动拼图</string>
+    <string name="sliding_puzzle_header_moves">步数</string>
+    <string name="sliding_puzzle_header_best">最少步数</string>
+    <string name="sliding_puzzle_new_game">新游戏</string>
+    <string name="sliding_puzzle_message_win">恭喜完成!</string>
+    <string name="sliding_puzzle_tip">点击相邻方块移动拼图</string>
+    <string name="sliding_puzzle_select_difficulty">选择难度</string>
+    <string name="sliding_puzzle_easy">简单 3×3</string>
+    <string name="sliding_puzzle_medium">中等 4×4</string>
+    <string name="sliding_puzzle_hard">困难 5×5</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

@@ -156,6 +156,9 @@
         <action
             android:id="@+id/action_gameListFragment_to_game2048Fragment"
             app:destination="@id/game2048Fragment" />
+        <action
+            android:id="@+id/action_gameListFragment_to_slidingPuzzleFragment"
+            app:destination="@id/slidingPuzzleFragment" />
     </fragment>
     
     <!-- 2048游戏界面 -->
@@ -166,6 +169,17 @@
         tools:layout="@layout/fragment_game_2048" >
         <action
             android:id="@+id/action_game2048Fragment_to_gameListFragment"
+            app:destination="@id/gameListFragment" />
+    </fragment>
+    
+    <!-- 滑动拼图游戏界面 -->
+    <fragment
+        android:id="@+id/slidingPuzzleFragment"
+        android:name="com.swu.myapplication.ui.game.SlidingPuzzleFragment"
+        android:label="滑动拼图"
+        tools:layout="@layout/fragment_sliding_puzzle" >
+        <action
+            android:id="@+id/action_slidingPuzzleFragment_to_gameListFragment"
             app:destination="@id/gameListFragment" />
     </fragment>
 </navigation>
