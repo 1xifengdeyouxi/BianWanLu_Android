@@ -8,3 +8,4 @@ import androidx.compose.ui.platform.LocalContext
 fun Int.resolve() = LocalContext.current.getString(this)
 
 fun <T> List<T>.toArrayList(): ArrayList<T> = ArrayList(this)
+
