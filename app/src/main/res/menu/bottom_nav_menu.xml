@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/notesFragment"
+        android:icon="@drawable/ic_notes"
+        android:title="笔记" />
+    <item
+        android:id="@+id/nav_todos"
+        android:icon="@drawable/ic_todos"
+        android:title="待办" />
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="我的" />
+</menu> 

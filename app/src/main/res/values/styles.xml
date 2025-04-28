@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 2048游戏数字格子样式 -->
+    <style name="GameCell">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_rowWeight">1</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
+    <!-- Switch样式 -->
+    <style name="SwitchTheme" parent="Theme.AppCompat.Light">
+        <!-- 激活状态轨道颜色 -->
+        <item name="colorControlActivated">@color/switch_thumb_active</item>
+        <!-- 轨道颜色 -->
+        <item name="android:colorForeground">@android:color/darker_gray</item>
+    </style>
+
+    <!-- RadioButton样式 -->
+    <style name="RadioButtonTheme" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="colorControlNormal">@android:color/darker_gray</item>
+    </style>
+</resources> 

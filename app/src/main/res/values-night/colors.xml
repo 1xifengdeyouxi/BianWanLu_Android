@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#181818</color>
+    <color name="background_card">#232323</color>
+    <color name="background_dialog">#232323</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#BBBBBB</color>
+    <color name="divider">#333333</color>
+    <color name="accent">#81C784</color>
+    <color name="warning">#FF6F60</color>
+    <color name="highlight">#FFD580</color>
+    <!-- 主题色和控件色 -->
+    <color name="primary">#81C784</color>
+    <color name="primary_dark">#388E3C</color>
+    <color name="switch_track_active">#80CBC4</color>
+    <color name="switch_thumb_active">#4DB6AC</color>
+</resources> 
