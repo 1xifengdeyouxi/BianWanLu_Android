@@ -82,6 +82,9 @@
         <action
             android:id="@+id/action_nav_profile_to_gameListFragment"
             app:destination="@id/gameListFragment" />
+        <action
+            android:id="@+id/action_nav_profile_to_darkModeFragment"
+            app:destination="@id/darkModeFragment" />
     </fragment>
 
     <fragment
@@ -181,5 +184,16 @@
         <action
             android:id="@+id/action_slidingPuzzleFragment_to_gameListFragment"
             app:destination="@id/gameListFragment" />
+    </fragment>
+
+    <!-- 深色模式设置界面 -->
+    <fragment
+        android:id="@+id/darkModeFragment"
+        android:name="com.swu.myapplication.ui.profile.DarkModeFragment"
+        android:label="深色模式"
+        tools:layout="@layout/fragment_dark_mode" >
+        <action
+            android:id="@+id/action_darkModeFragment_to_nav_profile"
+            app:destination="@id/nav_profile" />
     </fragment>
 </navigation>

@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 
 // 动画持续时间常量
 private const val NEW_TILE_DURATION = 300
-private const val MOVE_ANIMATION_DURATION = 200
+private const val MOVE_ANIMATION_DURATION = 100
 private const val TILE_APPEAR_DELAY = 50 // 每个方块出现的延迟时间
 
 /**
@@ -156,6 +156,7 @@ class TileRendererPuzzle(
                 
                 // 同时启动缩放和透明度动画
                 launch {
+                    // 从完全缩小到略微放大，再回到正常大小
                     scale.animateTo(
                         targetValue = 1f, 
                         animationSpec = keyframes {
@@ -168,10 +169,18 @@ class TileRendererPuzzle(
                 }
                 
                 launch {
+                    // 平滑地从完全透明到完全不透明
                     alpha.animateTo(
                         targetValue = 1f,
                         animationSpec = tween(durationMillis = NEW_TILE_DURATION)
                     )
+                }
+                
+                // 动画完成后更新状态以防止重复动画
+                if (tileOrder == puzzleSize * puzzleSize - 2) { // 最后一个非空方块
+                    delay(NEW_TILE_DURATION.toLong())
+                    // 所有方块动画完成后，直接更新状态而不触发额外的动画
+                    previousPuzzleState = puzzleState.toList()
                 }
             }
         } else {
@@ -189,7 +198,7 @@ class TileRendererPuzzle(
             val colAnim = positionAnimations.second
     
             // 颜色动画
-            val colorAnimation = remember { Animatable(0f) }
+            val colorAnimation = remember { Animatable(1f) }
     
             // 计算方块是否移动了
             val hasMoved = remember(puzzleState) {
@@ -204,21 +213,28 @@ class TileRendererPuzzle(
     
             // 当拼图状态变化时，更新动画
             LaunchedEffect(puzzleState) {
-                // 更新颜色动画
-                colorAnimation.snapTo(0f)
-                colorAnimation.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(300)
-                )
-    
-                // 如果方块移动了，动画到新位置
+                // 只有移动的方块才更新颜色动画
                 if (hasMoved) {
+                    // 使用animateTo而不是snapTo+animateTo，避免闪烁
+                    launch {
+                        // 只在移动方块时应用微妙的颜色变化，而不是重置为0
+                        // 从当前值开始动画，避免跳跃变化
+                        colorAnimation.animateTo(
+                            targetValue = 0.7f,  // 先淡出一点
+                            animationSpec = tween(MOVE_ANIMATION_DURATION / 3)
+                        )
+                        colorAnimation.animateTo(
+                            targetValue = 1f,    // 再恢复正常
+                            animationSpec = tween(MOVE_ANIMATION_DURATION / 3)
+                        )
+                    }
+    
                     launch {
                         rowAnim.animateTo(
                             targetValue = currentPosition.row.toFloat(),
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessMedium
+                            animationSpec = tween(
+                                durationMillis = MOVE_ANIMATION_DURATION,
+                                easing = androidx.compose.animation.core.FastOutSlowInEasing
                             )
                         )
                     }
@@ -226,9 +242,9 @@ class TileRendererPuzzle(
                     launch {
                         colAnim.animateTo(
                             targetValue = currentPosition.col.toFloat(),
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessMedium
+                            animationSpec = tween(
+                                durationMillis = MOVE_ANIMATION_DURATION,
+                                easing = androidx.compose.animation.core.FastOutSlowInEasing
                             )
                         )
                     }
@@ -239,9 +255,14 @@ class TileRendererPuzzle(
                 }
             }
     
-            // 计算方块颜色
+            // 计算方块颜色 - 只对移动的方块应用颜色变化
             val tileColor = Color(0xFF4CAF50)
-            val animatedColor = tileColor.copy(alpha = 0.7f + (colorAnimation.value * 0.3f))
+            val animatedColor = if (hasMoved) {
+                // 更细微的颜色变化
+                tileColor.copy(alpha = 0.9f + (colorAnimation.value * 0.1f))
+            } else {
+                tileColor
+            }
     
             // 计算方块在网格中的位置
             val animOffsetX = with(density) { (colAnim.value * totalTileSize.toPx()) }
@@ -294,8 +315,8 @@ class TileRendererPuzzle(
     
     // 设置是否是新游戏
     fun setNewGame(isNew: Boolean) {
-        if (isNew) {
-            // 清除位置动画状态
+        if (isNew && !isNewGame) {
+            // 只在从非新游戏状态切换到新游戏状态时清除
             positionAnimationMap.clear()
         }
         isNewGame = isNew
