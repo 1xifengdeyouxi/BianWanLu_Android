@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="?android:attr/colorBackground">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="?android:attr/colorBackground"
         app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -35,7 +35,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="cursive"
                     android:text="全部笔记"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/text_primary"
                     android:textSize="36sp"
                     android:textStyle="bold" />
 
@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="0篇笔记"
-                    android:textColor="@android:color/darker_gray"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -53,7 +53,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/white"
+                android:background="?android:attr/colorBackground"
                 app:layout_collapseMode="pin">
 
                 <RelativeLayout
@@ -67,7 +67,7 @@
                         android:layout_centerVertical="true"
                         android:alpha="0"
                         android:text="全部笔记"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/text_primary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -116,7 +116,7 @@
                     android:gravity="center_vertical"
                     android:padding="16dp"
                     android:text="取消"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:id="@+id/tvEditTitle"
@@ -125,7 +125,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="选择笔记"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:id="@+id/btnComplete"
@@ -134,7 +134,7 @@
                     android:gravity="center_vertical"
                     android:padding="16dp"
                     android:text="完成"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_primary" />
             </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
