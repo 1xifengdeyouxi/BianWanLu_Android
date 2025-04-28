@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -12,6 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.swu.myapplication.databinding.ActivityMainBinding
 import com.swu.myapplication.utils.ThemeManager
+import android.view.View
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,6 +40,46 @@ class MainActivity : AppCompatActivity() {
         
         // 隐藏ActionBar
         supportActionBar?.hide()
+        
+        // 添加导航监听器，用于控制底部导航栏的显示和隐藏
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            updateBottomNavigationVisibility(destination)
+        }
+    }
+    
+    /**
+     * 根据导航目的地控制底部导航栏的显示和隐藏
+     */
+    private fun updateBottomNavigationVisibility(destination: NavDestination) {
+        // 在以下Fragment中显示底部导航栏
+        val showBottomNavInFragments = setOf(
+            R.id.notesFragment,
+            R.id.nav_todos,
+            R.id.nav_profile
+        )
+
+        // 在以下Fragment中隐藏底部导航栏
+        val hideBottomNavInFragments = setOf(
+            R.id.timerFragment,
+            R.id.gameListFragment,
+            R.id.darkModeFragment,
+            R.id.editFragment,
+            R.id.notebookListFragment,
+            R.id.game2048Fragment,
+            R.id.slidingPuzzleFragment,
+            R.id.runningTimerFragment,
+            R.id.createTimerFragment,
+            R.id.durationPickerFragment,
+            R.id.atmospherePickerFragment,
+            R.id.notebookManagerMenuFragment
+        )
+        
+        // 更新底部导航栏的可见性
+        if (destination.id in showBottomNavInFragments) {
+            binding.bottomNavigation.visibility = View.VISIBLE
+        } else if (destination.id in hideBottomNavInFragments) {
+            binding.bottomNavigation.visibility = View.GONE
+        }
     }
     
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -50,10 +92,14 @@ class MainActivity : AppCompatActivity() {
                 Configuration.UI_MODE_NIGHT_YES -> {
                     // 系统切换到夜间模式
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    // 重新创建活动以应用新主题
+                    recreate()
                 }
                 Configuration.UI_MODE_NIGHT_NO -> {
                     // 系统切换到浅色模式
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    // 重新创建活动以应用新主题
+                    recreate()
                 }
             }
         }
