@@ -14,6 +14,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.swu.myapplication.databinding.ActivityMainBinding
 import com.swu.myapplication.utils.ThemeManager
 import android.view.View
+import android.view.WindowManager
+import android.os.Build
+import android.view.WindowInsets
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +33,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 设置状态栏
+        setupStatusBar()
+
         // 正确获取NavController
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
@@ -44,6 +50,22 @@ class MainActivity : AppCompatActivity() {
         // 添加导航监听器，用于控制底部导航栏的显示和隐藏
         navController.addOnDestinationChangedListener { _, destination, _ ->
             updateBottomNavigationVisibility(destination)
+        }
+    }
+    
+    private fun setupStatusBar() {
+        // 设置状态栏颜色
+        window.statusBarColor = resources.getColor(R.color.primary, theme)
+        
+        // 如果是浅色状态栏，设置深色图标
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val isLightTheme = resources.configuration.uiMode and 
+                    Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
+            window.decorView.systemUiVisibility = if (isLightTheme) {
+                window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            } else {
+                window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+            }
         }
     }
     
