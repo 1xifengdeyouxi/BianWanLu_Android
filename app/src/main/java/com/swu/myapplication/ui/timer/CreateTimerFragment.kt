@@ -72,7 +72,7 @@ class CreateTimerFragment : Fragment() {
                 if (!title.isNullOrEmpty()) {
                     timerTitle = title
                     // 更新UI显示标题
-                    binding.etSpaceName.setText(title)
+                    binding.etTimerTitle.setText(title)
                 }
             }
 
@@ -82,7 +82,7 @@ class CreateTimerFragment : Fragment() {
                 if (durationItem != null) {
                     selectedDuration = durationItem
                     // 更新UI显示选中的时长
-                    binding.tvDurationText.text = durationItem.displayText
+                    binding.tvDuration.text = durationItem.displayText
                 }
             }
 
@@ -121,7 +121,7 @@ class CreateTimerFragment : Fragment() {
                     )
 
                     // 更新UI显示
-                    binding.tvAtmosphereText.text = atmosphereTitle
+                    binding.tvAtmosphere.text = atmosphereTitle
                 }
             }
         }
@@ -138,11 +138,11 @@ class CreateTimerFragment : Fragment() {
         if (isNewTimer) {
             // 新建模式
             binding.tvTitle.text = "创建时钟"
-            binding.cardDeleteTimer.visibility = View.GONE
+            binding.btnDelete.visibility = View.GONE
         } else {
             // 编辑模式
             binding.tvTitle.text = "修改时钟"
-            binding.cardDeleteTimer.visibility = View.VISIBLE
+            binding.btnDelete.visibility = View.VISIBLE
         }
     }
 
@@ -152,7 +152,7 @@ class CreateTimerFragment : Fragment() {
             ?.observe(viewLifecycleOwner) { durationItem ->
                 selectedDuration = durationItem
                 // 更新UI显示选中的时长
-                binding.tvDurationText.text = durationItem.displayText
+                binding.tvDuration.text = durationItem.displayText
             }
     }
 
@@ -163,7 +163,7 @@ class CreateTimerFragment : Fragment() {
                 if (atmosphereItem != null) {
                     selectedAtmosphere = atmosphereItem
                     // 更新UI显示选中的氛围
-                    binding.tvAtmosphereText.text = atmosphereItem.title
+                    binding.tvAtmosphere.text = atmosphereItem.title
                 }
             }
     }
@@ -180,12 +180,12 @@ class CreateTimerFragment : Fragment() {
         }
 
         // 使用时长选择
-        binding.tvDuration.setOnClickListener {
+        binding.durationLayout.setOnClickListener {
             findNavController().navigate(R.id.action_createTimerFragment_to_durationPickerFragment)
         }
 
         // 氛围选择
-        binding.tvAtmosphere.setOnClickListener {
+        binding.atmosphereLayout.setOnClickListener {
             // 使用Bundle传递氛围数据
             val bundle = Bundle()
             if (selectedAtmosphere != null) {
@@ -207,7 +207,7 @@ class CreateTimerFragment : Fragment() {
         }
 
         // 删除时钟
-        binding.cardDeleteTimer.setOnClickListener {
+        binding.btnDelete.setOnClickListener {
             showDeleteConfirmDialog()
         }
     }
@@ -217,7 +217,7 @@ class CreateTimerFragment : Fragment() {
      */
     private fun saveTimer() {
         // 获取输入的空间名称
-        val spaceName = binding.etSpaceName.text.toString().trim()
+        val spaceName = binding.etTimerTitle.text.toString().trim()
         if (spaceName.isEmpty()) {
             Toast.makeText(requireContext(), "请输入空间名称", Toast.LENGTH_SHORT).show()
             return

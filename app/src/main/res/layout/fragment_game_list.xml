@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="?android:attr/colorBackground">
 
     <!-- 标题栏 -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#5C6BC0"
+        android:background="@color/primary"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="小游戏"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -56,6 +56,7 @@
         android:layout_marginEnd="8dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="2dp"
+        android:background="@color/background_card"
         app:layout_constraintEnd_toStartOf="@+id/puzzleGameLayout"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +68,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="12dp"
+            android:background="@color/background_card">
 
             <ImageView
                 android:id="@+id/img2048"
@@ -81,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="2048"
-                android:textColor="@android:color/black"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -94,6 +96,7 @@
         android:layout_marginEnd="8dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="2dp"
+        android:background="@color/background_card"
         app:layout_constraintEnd_toStartOf="@+id/comingSoonLayout"
         app:layout_constraintStart_toEndOf="@+id/game2048Layout"
         app:layout_constraintTop_toTopOf="@+id/game2048Layout"
@@ -104,7 +107,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="12dp"
+            android:background="@color/background_card">
 
             <ImageView
                 android:id="@+id/imgPuzzle"
@@ -118,7 +122,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="滑动拼图"
-                android:textColor="@android:color/black"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -131,6 +135,7 @@
         android:layout_marginEnd="24dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="2dp"
+        android:background="@color/background_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/puzzleGameLayout"
         app:layout_constraintTop_toTopOf="@+id/puzzleGameLayout"
@@ -141,21 +146,21 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="12dp"
+            android:background="@color/background_card">
 
             <ImageView
-                android:id="@+id/imgComingSoon"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/jing_qing_qi_dai" />
+                android:src="@drawable/coming_soon" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="敬请期待"
-                android:textColor="@android:color/black"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

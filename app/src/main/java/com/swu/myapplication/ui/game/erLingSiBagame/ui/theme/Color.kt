@@ -9,6 +9,12 @@ val Secondary = Color(0xFFeee4da)
 val Background = Color(0xFFFAF8EF)
 val OnSurface = Color(0xFF776E65)
 
+// 深色主题颜色
+val BackgroundDark = Color(0xFF121212)
+val OnSurfaceDark = Color(0xFFE0E0E0)
+val BoardBackgroundDark = Color(0xFF2D2D2D)
+val EmptyCellColorDark = Color(0xFF424242)
+
 // 游戏板颜色
 val BoardBackground = Color(0xFFbbada0)
 val EmptyCellColor = Color(0xFFcdc1b4)

@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.swu.myapplication.ui.game.erLingSiBagame.ui.game.GameScreen
 import com.swu.myapplication.ui.game.erLingSiBagame.ui.theme.Compose2048Theme
 import com.swu.myapplication.databinding.FragmentGame2048Binding
+import com.swu.myapplication.R
 
 class Game2048Fragment : Fragment() {
     private var _binding: FragmentGame2048Binding? = null
@@ -30,13 +31,19 @@ class Game2048Fragment : Fragment() {
     ): View {
         _binding = FragmentGame2048Binding.inflate(inflater, container, false)
         val view = binding.root
+        
+        // 设置返回按钮点击事件
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+        
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
+                // 使用Compose2048Theme主题，自动适应深色模式
                 Compose2048Theme {
                     Surface(
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colors.background
                     ) {
                         Box(
@@ -49,17 +56,6 @@ class Game2048Fragment : Fragment() {
             }
         }
         return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupClickListeners()
-    }
-
-    private fun setupClickListeners() {
-        binding.btnBack.setOnClickListener{
-            findNavController().navigateUp()
-        }
     }
 
     override fun onDestroyView() {

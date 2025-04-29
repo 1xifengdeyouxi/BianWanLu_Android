@@ -28,6 +28,10 @@ class SlidingPuzzleFragment : Fragment() {
         _binding = FragmentSlidingPuzzleBinding.inflate(inflater, container, false)
         val view = binding.root
         
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+        
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -44,17 +48,6 @@ class SlidingPuzzleFragment : Fragment() {
             }
         }
         return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupClickListeners()
-    }
-
-    private fun setupClickListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
     }
 
     override fun onDestroyView() {
