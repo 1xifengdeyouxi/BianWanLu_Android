@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">便玩录</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
@@ -71,4 +71,11 @@
     <string name="empty_notes_message">还没有任何笔记\n点击下方按钮开始创建</string>
     <string name="empty_notes_image">空笔记状态图标</string>
     <string name="add_note">添加笔记</string>
+
+    <!-- 微信扫一扫相关字符串 -->
+    <string name="wechat_not_installed">未安装微信，请先安装微信</string>
+    <string name="wechat_launch_failed">打开微信失败</string>
+    <string name="permission_denied">权限被拒绝</string>
+    <string name="unknown_error">发生未知错误</string>
+    <string name="save_and_open_wechat">图片已保存到相册，正在打开微信...</string>
 </resources>
