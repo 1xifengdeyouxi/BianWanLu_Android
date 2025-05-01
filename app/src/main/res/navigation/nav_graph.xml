@@ -85,6 +85,9 @@
         <action
             android:id="@+id/action_nav_profile_to_darkModeFragment"
             app:destination="@id/darkModeFragment" />
+        <action
+            android:id="@+id/action_nav_profile_to_userAgreementFragment"
+            app:destination="@id/userAgreementFragment" />
     </fragment>
 
     <fragment
@@ -194,6 +197,17 @@
         tools:layout="@layout/fragment_dark_mode" >
         <action
             android:id="@+id/action_darkModeFragment_to_nav_profile"
+            app:destination="@id/nav_profile" />
+    </fragment>
+
+    <!-- 用户协议与隐私政策界面 -->
+    <fragment
+        android:id="@+id/userAgreementFragment"
+        android:name="com.swu.myapplication.ui.profile.UserAgreementFragment"
+        android:label="用户协议与隐私政策"
+        tools:layout="@layout/fragment_user_agreement">
+        <action
+            android:id="@+id/action_userAgreementFragment_to_nav_profile"
             app:destination="@id/nav_profile" />
     </fragment>
 </navigation>

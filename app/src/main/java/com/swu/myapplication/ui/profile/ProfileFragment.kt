@@ -3,6 +3,7 @@ package com.swu.myapplication.ui.profile
 import android.Manifest
 import android.app.Dialog
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -23,10 +24,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.swu.myapplication.R
+import com.swu.myapplication.databinding.DialogAboutUsBinding
 import com.swu.myapplication.databinding.DialogFeedbackOptionsBinding
 import com.swu.myapplication.databinding.DialogQrcodeViewBinding
 import com.swu.myapplication.databinding.FragmentProfileBinding
-import android.content.ComponentName
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -90,12 +91,58 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnAboutUs.setOnClickListener {
-            showFeatureNotImplemented("关于我们")
+            showAboutUsDialog()
+        }
+        
+        // 用户协议与隐私政策点击事件
+        binding.btnUserAgreement.setOnClickListener {
+            findNavController().navigate(R.id.action_nav_profile_to_userAgreementFragment)
         }
 
         binding.btnRate.setOnClickListener {
             showFeatureNotImplemented("给个好评")
         }
+    }
+
+    /**
+     * 显示关于我们对话框
+     */
+    private fun showAboutUsDialog() {
+        val dialog = Dialog(requireContext())
+        val dialogBinding = DialogAboutUsBinding.inflate(layoutInflater)
+        
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.apply {
+            setBackgroundDrawableResource(android.R.color.transparent)
+            
+            // 设置对话框宽度为屏幕宽度的85%
+            val displayMetrics = resources.displayMetrics
+            val width = (displayMetrics.widthPixels * 0.85).toInt()
+            
+            // 设置对话框布局参数
+            val layoutParams = attributes
+            layoutParams.width = width
+            attributes = layoutParams
+        }
+        
+        // 获取应用版本信息
+        val packageInfo = requireContext().packageManager.getPackageInfo(requireContext().packageName, 0)
+        val versionName = packageInfo.versionName
+        
+        // 设置版本信息
+        dialogBinding.tvVersion.text = "版本$versionName"
+        
+        // 设置应用描述
+        dialogBinding.tvAppDescription.text = getString(R.string.app_description)
+        
+        // 了解更多按钮点击事件
+        dialogBinding.btnLearnMore.setOnClickListener {
+            // 这里可以添加跳转到官网或更多信息的逻辑
+            Toast.makeText(requireContext(), R.string.more_features_coming, Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+        
+        dialog.show()
     }
 
     private fun showFeedbackOptions() {

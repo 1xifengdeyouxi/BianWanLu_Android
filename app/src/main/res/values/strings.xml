@@ -78,4 +78,9 @@
     <string name="permission_denied">权限被拒绝</string>
     <string name="unknown_error">发生未知错误</string>
     <string name="save_and_open_wechat">图片已保存到相册，正在打开微信...</string>
+    
+    <!-- 关于我们对话框相关字符串 -->
+    <string name="app_description">便玩录是一款为学生设计的智能笔记应用，集成了笔记管理、待办事项、番茄时钟和休闲小游戏功能，助您高效学习与放松身心。</string>
+    <string name="learn_more">了解更多</string>
+    <string name="more_features_coming">更多精彩功能，敬请期待</string>
 </resources>

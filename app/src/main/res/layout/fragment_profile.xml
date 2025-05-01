@@ -182,6 +182,40 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+    <!-- 用户协议与隐私政策 -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btnUserAgreement"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/background_card"
+        android:foreground="?attr/selectableItemBackground">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_about_us" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="用户协议与隐私政策"
+                android:textSize="16sp"
+                android:textColor="@color/text_primary"
+                android:layout_marginStart="16dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
     <!-- 给个好评 -->
     <androidx.cardview.widget.CardView
         android:id="@+id/btnRate"

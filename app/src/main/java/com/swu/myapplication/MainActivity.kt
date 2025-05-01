@@ -93,7 +93,8 @@ class MainActivity : AppCompatActivity() {
             R.id.createTimerFragment,
             R.id.durationPickerFragment,
             R.id.atmospherePickerFragment,
-            R.id.notebookManagerMenuFragment
+            R.id.notebookManagerMenuFragment,
+            R.id.userAgreementFragment
         )
         
         // 更新底部导航栏的可见性
