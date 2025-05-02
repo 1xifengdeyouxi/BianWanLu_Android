@@ -18,6 +18,7 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -28,6 +29,9 @@ import com.swu.myapplication.databinding.DialogAboutUsBinding
 import com.swu.myapplication.databinding.DialogFeedbackOptionsBinding
 import com.swu.myapplication.databinding.DialogQrcodeViewBinding
 import com.swu.myapplication.databinding.FragmentProfileBinding
+import com.swu.myapplication.databinding.DialogRateSupportBinding
+import android.widget.TextView
+import com.swu.myapplication.utils.RomUtils
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -100,7 +104,7 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnRate.setOnClickListener {
-            showFeatureNotImplemented("给个好评")
+            showRateSupportDialog()
         }
     }
 
@@ -424,8 +428,164 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun showFeatureNotImplemented(featureName: String) {
-        Toast.makeText(requireContext(), "$featureName 功能即将上线", Toast.LENGTH_SHORT).show()
+    /**
+     * 显示支持作者对话框
+     */
+    private fun showRateSupportDialog() {
+        val dialog = Dialog(requireContext())
+        val dialogBinding = DialogRateSupportBinding.inflate(layoutInflater)
+        
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.apply {
+            setBackgroundDrawableResource(android.R.color.transparent)
+            
+            // 设置对话框宽度为屏幕宽度的85%
+            val displayMetrics = resources.displayMetrics
+            val width = (displayMetrics.widthPixels * 0.85).toInt()
+            
+            // 设置对话框布局参数
+            val layoutParams = attributes
+            layoutParams.width = width
+            attributes = layoutParams
+        }
+        
+        // 设置关闭按钮点击事件
+        dialogBinding.btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+        
+        // 设置五星好评按钮点击事件
+        dialogBinding.btnFiveStarRate.setOnClickListener {
+            // 跳转到应用宝
+            jumpToYingyongbao()
+            dialog.dismiss()
+        }
+        
+        // 设置打赏作者按钮点击事件
+        dialogBinding.btnSupportAuthor.setOnClickListener {
+            // 显示确认对话框
+            showDonateConfirmDialog()
+            dialog.dismiss()
+        }
+        
+        dialog.show()
+    }
+    
+    /**
+     * 显示捐赠确认对话框
+     */
+    private fun showDonateConfirmDialog() {
+        val confirmDialog = Dialog(requireContext())
+        confirmDialog.setContentView(R.layout.dialog_confirm)
+        confirmDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        
+        // 设置对话框宽度为屏幕宽度的85%
+        val displayMetrics = resources.displayMetrics
+        val width = (displayMetrics.widthPixels * 0.85).toInt()
+        confirmDialog.window?.let {
+            val layoutParams = it.attributes
+            layoutParams.width = width
+            it.attributes = layoutParams
+        }
+        
+        // 设置对话框内容
+        val tvTitle = confirmDialog.findViewById<TextView>(R.id.tvTitle)
+        val tvMessage = confirmDialog.findViewById<TextView>(R.id.tvMessage)
+        val btnCancel = confirmDialog.findViewById<Button>(R.id.btnCancel)
+        val btnConfirm = confirmDialog.findViewById<Button>(R.id.btnConfirm)
+        
+        tvTitle.text = "支付宝捐赠"
+        tvMessage.text = "确认跳转到支付宝？"
+        
+        btnCancel.setOnClickListener {
+            confirmDialog.dismiss()
+        }
+        
+        btnConfirm.setOnClickListener {
+            val alipayPackageName = "com.eg.android.AlipayGphone"
+            
+            if (RomUtils.checkApkExist(requireContext(), alipayPackageName)) {
+                donateWithAlipay()
+            } else {
+                Toast.makeText(requireContext(), "本机未安装支付宝", Toast.LENGTH_SHORT).show()
+            }
+            confirmDialog.dismiss()
+        }
+        
+        confirmDialog.show()
+    }
+    
+    /**
+     * 使用支付宝进行捐赠
+     */
+    private fun donateWithAlipay() {
+        // 支付宝付款码
+        val urlCode = "fkx17372v8km7by2niomj08"
+        val intentFullUrl = """
+            intent://platformapi/startapp?
+            saId=10000007&
+            clientVersion=3.7.0.0718&
+            qrcode=https%3A%2F%2Fqr.alipay.com%2F$urlCode%3F_s%3Dweb-other&
+            _t=1472443966571#Intent;
+            scheme=alipayqr;
+            package=com.eg.android.AlipayGphone;
+            end
+        """.trimIndent().replace("\n", "") // 移除换行符
+
+        try {
+            val intent = Intent.parseUri(intentFullUrl, Intent.URI_INTENT_SCHEME).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            requireContext().startActivity(intent)
+            Toast.makeText(requireContext(), "正在打开支付宝...", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(requireContext(), "跳转支付宝失败: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    /**
+     * 跳转到应用宝
+     */
+    private fun jumpToYingyongbao() {
+        try {
+            val packageName = requireContext().packageName
+            
+            // 尝试打开应用宝中本应用的页面
+            val uri = Uri.parse("market://details?id=$packageName")
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            intent.setPackage("com.tencent.android.qqdownloader") // 指定应用宝包名
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            // 检查是否有应用可以处理该意图（是否安装了应用宝）
+            if (intent.resolveActivity(requireContext().packageManager) != null) {
+                startActivity(intent)
+                Toast.makeText(requireContext(), "正在前往应用宝...", Toast.LENGTH_SHORT).show()
+            } else {
+                // 如果没有安装应用宝，尝试打开其他应用市场
+                val marketIntent = Intent(Intent.ACTION_VIEW, uri)
+                marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                
+                try {
+                    startActivity(marketIntent)
+                    Toast.makeText(requireContext(), "正在前往应用市场...", Toast.LENGTH_SHORT).show()
+                } catch (e: ActivityNotFoundException) {
+                    // 如果没有任何应用市场，打开应用宝网页版
+                    val webUri = Uri.parse("https://sj.qq.com/myapp/detail.htm?apkName=$packageName")
+                    val webIntent = Intent(Intent.ACTION_VIEW, webUri)
+                    webIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    try {
+                        startActivity(webIntent)
+                        Toast.makeText(requireContext(), "正在前往应用宝网页版...", Toast.LENGTH_SHORT).show()
+                    } catch (e2: Exception) {
+                        Toast.makeText(requireContext(), "无法打开应用宝，请检查网络或是否安装浏览器", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(requireContext(), "跳转应用宝失败，请稍后再试", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroyView() {

@@ -86,7 +86,14 @@ class AddTodoDialog {
             // 创建或更新Todo对象
             val todo = existingTodo?.copy(
                 title = title,
-                modificationTime = currentTime
+                modificationTime = currentTime,
+                isCompleted = existingTodo!!.isCompleted,
+                isStarred = existingTodo!!.isStarred,
+                content = existingTodo!!.content,
+                creationTime = existingTodo!!.creationTime,
+                reminderDate = existingTodo!!.reminderDate,
+                reminderTime = existingTodo!!.reminderTime,
+                categoryId = existingTodo!!.categoryId
             ) ?: Todo(
                 title = title,
                 creationTime = currentTime,

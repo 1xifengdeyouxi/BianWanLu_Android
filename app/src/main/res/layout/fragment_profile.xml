@@ -203,7 +203,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_about_us" />
+                android:src="@drawable/yishiyuzhengce" />
 
             <TextView
                 android:layout_width="0dp"

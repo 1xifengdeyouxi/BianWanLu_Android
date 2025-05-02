@@ -78,6 +78,8 @@ class TodoViewModel(
      */
     fun updateTodo(todo: Todo) = viewModelScope.launch {
         todoRepository.updateTodo(todo)
+        refreshTodos()
+        refreshTodosWithReminders()
     }
     
     fun deleteTodo(todo: Todo) {
