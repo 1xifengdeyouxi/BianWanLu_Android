@@ -19,6 +19,7 @@ class NotebookManagerMenuFragment : Fragment() {
     private lateinit var viewModel: NotebookViewModel
     private lateinit var adapter: NotebookManagerAdapter
     private val selectedNotebooks = mutableSetOf<Notebook>()
+    private var currentDialog: androidx.appcompat.app.AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -114,25 +115,44 @@ class NotebookManagerMenuFragment : Fragment() {
     }
 
     private fun showEditNotebookDialog(notebook: Notebook) {
-        NotebookDialogHelper.createEditNotebookDialog(
+        // 检查是否已有对话框显示
+        if (currentDialog?.isShowing == true) {
+            return
+        }
+        
+        val dialog = NotebookDialogHelper.createEditNotebookDialog(
             context = requireContext(),
             notebook = notebook,
             onConfirm = { name ->
                 viewModel.updateNotebook(notebook.copy(name = name))
                 selectedNotebooks.clear()
                 updateUI()
+                currentDialog = null
             }
-        ).show()
+        )
+        
+        // 设置对话框消失监听
+        dialog.setOnDismissListener {
+            currentDialog = null
+        }
+        
+        currentDialog = dialog
+        dialog.show()
     }
 
     private fun showDeleteNotebooksDialog(notebooks: List<Notebook>) {
+        // 检查是否已有对话框显示
+        if (currentDialog?.isShowing == true) {
+            return
+        }
+        
         val message = if (notebooks.size == 1) {
             "确定要删除笔记本${notebooks[0].name}吗？"
         } else {
             "确定要删除选中的${notebooks.size}个笔记本吗？"
         }
 
-        NotebookDialogHelper.createDeleteNotebookDialog(
+        val dialog = NotebookDialogHelper.createDeleteNotebookDialog(
             context = requireContext(),
             notebook = notebooks[0], // 这里传入第一个笔记本只是为了复用对话框
             onConfirm = {
@@ -141,8 +161,17 @@ class NotebookManagerMenuFragment : Fragment() {
                 }
                 selectedNotebooks.clear()
                 updateUI()
+                currentDialog = null
             }
-        ).show()
+        )
+        
+        // 设置对话框消失监听
+        dialog.setOnDismissListener {
+            currentDialog = null
+        }
+        
+        currentDialog = dialog
+        dialog.show()
     }
 
     override fun onDestroyView() {

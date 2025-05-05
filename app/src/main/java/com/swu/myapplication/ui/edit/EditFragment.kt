@@ -3,6 +3,7 @@ package com.swu.myapplication.ui.edit
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ import com.swu.myapplication.ui.notebook.NotebookChipHelper
 import com.swu.myapplication.ui.notebook.NotebookViewModel
 import com.swu.myapplication.ui.notes.NoteViewModel
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class EditFragment : Fragment() {
     private var _binding: FragmentEditBinding? = null
@@ -89,6 +91,9 @@ class EditFragment : Fragment() {
             // 按钮点击监听
             btnBack.setOnClickListener { handleBackPress() }
             btnSave.setOnClickListener { saveNote() }
+            
+            // 默认显示当前时间
+            tvNoteInfo.text = "最后更新于 ${formatDate(System.currentTimeMillis())}"
         }
     }
 
@@ -108,6 +113,8 @@ class EditFragment : Fragment() {
                         currentNote = note
                         binding.etTitle.setText(note.title)
                         binding.etContent.setText(note.content)
+                        // 更新显示修改时间
+                        updateNoteInfoText(note.modifiedTime)
                     } ?: showToast("笔记不存在")
                 }
             }
@@ -116,6 +123,14 @@ class EditFragment : Fragment() {
                 showToast("无效的笔记本")
             }
         }
+    }
+    
+    private fun updateNoteInfoText(timeMillis: Long) {
+        binding.tvNoteInfo.text = "最后更新于 ${formatDate(timeMillis)}"
+    }
+    
+    private fun formatDate(timeMillis: Long): String {
+        return DateFormat.format("yyyy/MM/dd HH:mm", Date(timeMillis)).toString()
     }
 
     private fun saveNote() {
@@ -128,6 +143,8 @@ class EditFragment : Fragment() {
             return
         }
 
+        val currentTime = System.currentTimeMillis()
+        
         lifecycleScope.launch {
             if (args.noteId == Note.INVALID_ID) {
                 // 新建笔记的情况
@@ -138,14 +155,16 @@ class EditFragment : Fragment() {
                         title = title.ifEmpty { "无标题" },
                         content = content,
                         notebookId = args.notebookId,
-                        createdTime = System.currentTimeMillis(),
-                        modifiedTime = System.currentTimeMillis()
+                        createdTime = currentTime,
+                        modifiedTime = currentTime
                     )
                     viewModel.insertNote(newNote)
                     currentNote = newNote
                     isSaved = true
                     // 更新笔记本中的笔记数量
                     notebookViewModel.incrementNoteCount(args.notebookId)
+                    // 更新时间显示
+                    updateNoteInfoText(currentTime)
                     showToast("创建笔记成功")
                 } else {
                     // 已经保存过，更新最近创建的笔记
@@ -153,9 +172,11 @@ class EditFragment : Fragment() {
                         val updatedNote = note.copy(
                             title = title.ifEmpty { "无标题" },
                             content = content,
-                            modifiedTime = System.currentTimeMillis()
+                            modifiedTime = currentTime
                         )
                         viewModel.updateNote(updatedNote)
+                        // 更新时间显示
+                        updateNoteInfoText(currentTime)
                         showToast("保存成功")
                     }
                 }
@@ -166,9 +187,11 @@ class EditFragment : Fragment() {
                         val updatedNote = note.copy(
                             title = title.ifEmpty { "无标题" },
                             content = content,
-                            modifiedTime = System.currentTimeMillis()
+                            modifiedTime = currentTime
                         )
                         viewModel.updateNote(updatedNote)
+                        // 更新时间显示
+                        updateNoteInfoText(currentTime)
                         showToast("保存成功")
                     }
                 } else {
@@ -182,6 +205,7 @@ class EditFragment : Fragment() {
     private fun handleBackPress() {
         lifecycleScope.launch {
             if (isContentChanged) {
+                val currentTime = System.currentTimeMillis()
                 if (args.noteId == Note.INVALID_ID) {
                     // 新建笔记的情况
                     if (!isSaved) {
@@ -194,9 +218,11 @@ class EditFragment : Fragment() {
                         val updatedNote = note.copy(
                             title = binding.etTitle.text.toString().trim().ifEmpty { "无标题" },
                             content = binding.etContent.text.toString().trim(),
-                            modifiedTime = System.currentTimeMillis()
+                            modifiedTime = currentTime
                         )
                         viewModel.updateNote(updatedNote)
+                        // 更新时间显示
+                        updateNoteInfoText(currentTime)
                         showToast("保存成功")
                     }
                 }

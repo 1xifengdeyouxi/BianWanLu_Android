@@ -30,4 +30,17 @@
         <item name="textAllCaps">false</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
+
+    <!-- 自定义AlertDialog样式 -->
+    <style name="RoundedAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@drawable/bg_dialog_shadow</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowMinWidthMinor">85%</item>
+        <item name="android:windowMinWidthMajor">85%</item>
+        <item name="android:maxWidth">640dp</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.5</item>
+    </style>
 </resources> 

@@ -49,7 +49,7 @@ class AddTodoDialog {
         
         // 设置透明背景和位置
         dialog.window?.apply {
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setBackgroundDrawableResource(R.drawable.bg_dialog_shadow)
             setGravity(Gravity.BOTTOM)
             // 对话框以外部分半透明
             setDimAmount(0.5f)

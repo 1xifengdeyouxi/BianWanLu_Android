@@ -19,6 +19,12 @@
     <color name="switch_track_active">#80CBC4</color>
     <color name="switch_thumb_active">#009688</color>
     
+    <!-- iOS风格的标题栏颜色 -->
+    <color name="toolbar_background">#FFFFFF</color>
+    <color name="toolbar_text">#333333</color>
+    <color name="toolbar_icon">#4CAF50</color>
+    <color name="status_bar">#FFFFFF</color>
+    
     <!-- 2048游戏格子颜色 -->
     <color name="cell_empty">#CBC1B0</color>
     <color name="cell_2">#F0E8D8</color>

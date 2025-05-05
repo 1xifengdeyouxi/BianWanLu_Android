@@ -117,7 +117,7 @@ class ProfileFragment : Fragment() {
         
         dialog.setContentView(dialogBinding.root)
         dialog.window?.apply {
-            setBackgroundDrawableResource(android.R.color.transparent)
+            setBackgroundDrawableResource(R.drawable.bg_dialog_shadow)
             
             // 设置对话框宽度为屏幕宽度的85%
             val displayMetrics = resources.displayMetrics
@@ -154,7 +154,7 @@ class ProfileFragment : Fragment() {
         val dialogBinding = DialogFeedbackOptionsBinding.inflate(layoutInflater)
         
         dialog.setContentView(dialogBinding.root)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_shadow)
         
         // 设置关闭按钮点击事件
         dialogBinding.btnClose.setOnClickListener {
@@ -195,7 +195,7 @@ class ProfileFragment : Fragment() {
         val dialogBinding = DialogQrcodeViewBinding.inflate(layoutInflater)
         
         dialog.setContentView(dialogBinding.root)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_shadow)
         
         // 设置二维码图片 - 使用weixi.jpg
         dialogBinding.ivQrCode.setImageResource(R.drawable.weixi)
@@ -437,7 +437,7 @@ class ProfileFragment : Fragment() {
         
         dialog.setContentView(dialogBinding.root)
         dialog.window?.apply {
-            setBackgroundDrawableResource(android.R.color.transparent)
+            setBackgroundDrawableResource(R.drawable.bg_dialog_shadow)
             
             // 设置对话框宽度为屏幕宽度的85%
             val displayMetrics = resources.displayMetrics
@@ -477,7 +477,7 @@ class ProfileFragment : Fragment() {
     private fun showDonateConfirmDialog() {
         val confirmDialog = Dialog(requireContext())
         confirmDialog.setContentView(R.layout.dialog_confirm)
-        confirmDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        confirmDialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_shadow)
         
         // 设置对话框宽度为屏幕宽度的85%
         val displayMetrics = resources.displayMetrics

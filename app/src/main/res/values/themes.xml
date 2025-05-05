@@ -9,7 +9,23 @@
         <item name="android:colorBackground">@color/background</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
     </style>
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
+    
+    <!-- 自定义Toolbar样式 -->
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/toolbar_background</item>
+        <item name="titleTextColor">@color/toolbar_text</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:theme">@style/ThemeOverlay.App.Toolbar</item>
+    </style>
+    
+    <style name="ThemeOverlay.App.Toolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+        <item name="colorControlNormal">@color/toolbar_icon</item>
+        <item name="android:textColorPrimary">@color/toolbar_text</item>
+    </style>
 </resources>

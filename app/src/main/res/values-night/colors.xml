@@ -14,4 +14,10 @@
     <color name="primary_dark">#388E3C</color>
     <color name="switch_track_active">#80CBC4</color>
     <color name="switch_thumb_active">#4DB6AC</color>
+    
+    <!-- iOS风格的标题栏深色模式颜色 -->
+    <color name="toolbar_background">#1C1C1E</color>
+    <color name="toolbar_text">#FFFFFF</color>
+    <color name="toolbar_icon">#81C784</color>
+    <color name="status_bar">#000000</color>
 </resources> 

@@ -21,6 +21,7 @@
             android:layout_height="48dp"
             android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="TODO"
             android:src="@drawable/ic_arrow_back"
             app:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -46,6 +47,7 @@
             android:layout_height="48dp"
             android:layout_marginEnd="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="TODO"
             android:src="@android:drawable/ic_menu_manage"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -153,18 +155,4 @@
         android:paddingVertical="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvMyNotebooks" />
-
-    <!-- 新增笔记本按钮 -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddNotebook"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:contentDescription="添加笔记本"
-        android:src="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:backgroundTint="@color/primary"
-        app:tint="@color/white" />
-
 </androidx.constraintlayout.widget.ConstraintLayout> 

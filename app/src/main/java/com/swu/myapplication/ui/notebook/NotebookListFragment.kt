@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -20,6 +21,7 @@ class NotebookListFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: NotebookViewModel
     private lateinit var adapter: NotebookAdapter
+    private var currentDialog: AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -105,7 +107,12 @@ class NotebookListFragment : Fragment() {
     }
 
     private fun showAddNotebookDialog() {
-        // 重用NotebookManagerFragment中的对话框逻辑
+        // 检查是否已有对话框显示
+        if (currentDialog?.isShowing == true) {
+            return
+        }
+        
+        // 创建并显示对话框
         val dialog = NotebookDialogHelper.createAddNotebookDialog(
             context = requireContext(),
             onConfirm = { name ->
@@ -120,30 +127,64 @@ class NotebookListFragment : Fragment() {
                     return@createAddNotebookDialog
                 }
                 viewModel.insertNotebook(name)
+                currentDialog = null
             }
         )
+        
+        // 设置对话框消失监听
+        dialog.setOnDismissListener {
+            currentDialog = null
+        }
+        
+        currentDialog = dialog
         dialog.show()
     }
 
     private fun showEditNotebookDialog(notebook: Notebook) {
+        // 检查是否已有对话框显示
+        if (currentDialog?.isShowing == true) {
+            return
+        }
+        
         val dialog = NotebookDialogHelper.createEditNotebookDialog(
             context = requireContext(),
             notebook = notebook,
             onConfirm = { name ->
                 viewModel.updateNotebook(notebook.copy(name = name))
+                currentDialog = null
             }
         )
+        
+        // 设置对话框消失监听
+        dialog.setOnDismissListener {
+            currentDialog = null
+        }
+        
+        currentDialog = dialog
         dialog.show()
     }
 
     private fun showDeleteNotebookDialog(notebook: Notebook) {
+        // 检查是否已有对话框显示
+        if (currentDialog?.isShowing == true) {
+            return
+        }
+        
         val dialog = NotebookDialogHelper.createDeleteNotebookDialog(
             context = requireContext(),
             notebook = notebook,
             onConfirm = {
                 viewModel.deleteNotebook(notebook)
+                currentDialog = null
             }
         )
+        
+        // 设置对话框消失监听
+        dialog.setOnDismissListener {
+            currentDialog = null
+        }
+        
+        currentDialog = dialog
         dialog.show()
     }
 

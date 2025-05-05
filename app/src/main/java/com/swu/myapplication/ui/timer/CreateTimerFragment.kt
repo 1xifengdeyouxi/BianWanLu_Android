@@ -273,7 +273,7 @@ class CreateTimerFragment : Fragment() {
      * 显示删除确认对话框
      */
     private fun showDeleteConfirmDialog() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext(), R.style.RoundedAlertDialog)
             .setTitle("确认删除")
             .setMessage("确定要删除此时钟吗？此操作无法撤销。")
             .setPositiveButton("删除") { _, _ ->
