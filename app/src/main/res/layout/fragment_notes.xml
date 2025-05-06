@@ -107,6 +107,8 @@
                 android:layout_height="?attr/actionBarSize"
                 android:orientation="horizontal"
                 android:visibility="gone"
+                android:elevation="4dp"
+                android:background="?android:attr/colorBackground"
                 app:layout_collapseMode="pin">
 
                 <TextView

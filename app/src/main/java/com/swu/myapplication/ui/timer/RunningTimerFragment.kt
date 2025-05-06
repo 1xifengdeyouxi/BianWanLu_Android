@@ -3,6 +3,7 @@ package com.swu.myapplication.ui.timer
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,8 +67,10 @@ class RunningTimerFragment : Fragment() {
                 "森林" -> R.drawable.senlin
                 "星空" -> R.drawable.xingkong
                 "海洋" -> R.drawable.haiyang
-                else -> R.drawable.senlin
+                //其他默认图片
+                else -> R.drawable.chengshi
             }
+           Log.d("RunningTimerFragment", " RunningTimerFragment中 $timerTitle $durationMinutes  $atmosphereTitle $customImageUri $atmosphereResId")
         }
         
         // 初始化UI
@@ -88,8 +91,8 @@ class RunningTimerFragment : Fragment() {
         
         // 设置标题
         binding.tvTimerTitle.text = timerTitle
-        
-        // 设置背景 - 优先使用自定义图片
+        Log.d("RunningTimerFragment", "Timer Title: $timerTitle")
+        // 设置背景 - 优先使用标题
         if (!customImageUri.isNullOrEmpty()) {
             try {
                 // 尝试加载自定义图片URI作为背景
@@ -98,6 +101,7 @@ class RunningTimerFragment : Fragment() {
                 binding.ivBackgroundImage.visibility = View.VISIBLE
                 // 避免重复设置背景资源
                 binding.root.setBackgroundResource(android.R.color.transparent)
+                Log.d("RunningTimerFragment", "自定义图片: $uri")
             } catch (e: Exception) {
                 // 加载失败时使用预定义资源
                 binding.ivBackgroundImage.visibility = View.GONE
@@ -108,13 +112,11 @@ class RunningTimerFragment : Fragment() {
             // 使用预定义资源
             binding.ivBackgroundImage.visibility = View.GONE
             binding.root.setBackgroundResource(atmosphereResId)
+            Log.d("RunningTimerFragment", "使用预定义资源:")
         }
         
         // 初始化时间显示
         updateTimerDisplay(durationMinutes * 60 * 1000L)
-        
-        // 隐藏页面指示器，因为不需要该功能
-        binding.pageIndicator.visibility = View.GONE
     }
     
     private fun setupClickListeners() {

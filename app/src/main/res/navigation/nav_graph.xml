@@ -111,6 +111,23 @@
         android:name="com.swu.myapplication.ui.timer.RunningTimerFragment"
         android:label="计时器"
         tools:layout="@layout/fragment_running_timer">
+        <argument
+            android:name="timerTitle"
+            app:argType="string"
+            android:defaultValue="静心" />
+        <argument
+            android:name="durationMinutes"
+            app:argType="integer"
+            android:defaultValue="25" />
+        <argument
+            android:name="atmosphereTitle"
+            app:argType="string"
+            android:defaultValue="森林" />
+        <argument
+            android:name="atmosphere_image_uri"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true" />
         <action
             android:id="@+id/action_runningTimerFragment_to_timerFragment"
             app:destination="@id/timerFragment" />

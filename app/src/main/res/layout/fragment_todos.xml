@@ -59,16 +59,16 @@
             </LinearLayout>
 
             <!-- 编辑模式工具栏 -->
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/editModeToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:orientation="horizontal"
-                android:visibility="gone"
                 android:background="?android:attr/colorBackground"
                 android:elevation="4dp"
+                android:visibility="gone"
                 app:layout_collapseMode="pin">
 
+                <!-- 左侧按钮：固定在父容器左侧 -->
                 <TextView
                     android:id="@+id/btnCancel"
                     android:layout_width="wrap_content"
@@ -76,17 +76,25 @@
                     android:gravity="center_vertical"
                     android:padding="16dp"
                     android:text="取消"
-                    android:textColor="@color/text_primary" />
+                    android:textColor="@color/text_primary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
+                <!-- 中间标题：直接锚定到父容器中心 -->
                 <TextView
                     android:id="@+id/tvEditTitle"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:gravity="center"
-                    android:text="选择待办"
-                    android:textColor="@color/text_primary" />
+                    android:text="选择笔记"
+                    android:textColor="@color/text_primary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
+                <!-- 右侧按钮：固定在父容器右侧 -->
                 <TextView
                     android:id="@+id/btnComplete"
                     android:layout_width="wrap_content"
@@ -94,8 +102,12 @@
                     android:gravity="center_vertical"
                     android:padding="16dp"
                     android:text="全选"
-                    android:textColor="@color/text_primary" />
-            </LinearLayout>
+                    android:textColor="@color/text_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- 类别筛选 -->
             <HorizontalScrollView

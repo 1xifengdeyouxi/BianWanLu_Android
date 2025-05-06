@@ -1,6 +1,7 @@
 package com.swu.myapplication.ui.timer
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -62,18 +63,37 @@ class TimerFragment : Fragment() {
                 // 从适配器获取完整的Timer对象
                 val timer = adapter.getTimerById(timerItem.id)
                 
+                // 详细记录数据传递情况
+                Log.d("TimerFragment", "onStartClick: timerItem.id=${timerItem.id}, timerItem.title=${timerItem.title}, timerItem.durationMinutes=${timerItem.durationMinutes}")
+                Log.d("TimerFragment", "timer对象: ${timer != null}")
+                
                 // 点击开始按钮跳转到RunningTimerFragment
                 val bundle = Bundle().apply {
+                    // 确保传递非空值，使用timerItem作为备选
                     putString("timerTitle", timer?.title ?: timerItem.title)
                     putInt("durationMinutes", timer?.durationMinutes ?: timerItem.durationMinutes)
                     // 使用timer中的氛围设置，如果为空则默认使用"森林"
                     putString("atmosphereTitle", timer?.atmosphereTitle ?: "森林")
                     // 添加自定义图片URI
-                    timer?.atmosphereImageUri?.let { uri ->
-                        putString("atmosphere_image_uri", uri)
+                    if (timer?.atmosphereImageUri != null) {
+                        putString("atmosphere_image_uri", timer.atmosphereImageUri)
+                        Log.d("TimerFragment", "传递自定义图片URI: ${timer.atmosphereImageUri}")
+                    } else {
+                        Log.d("TimerFragment", "没有自定义图片URI可传递")
                     }
                 }
-                findNavController().navigate(R.id.action_timerFragment_to_runningTimerFragment, bundle)
+                
+                // 记录Bundle内容
+                Log.d("TimerFragment", "Bundle内容: timerTitle=${bundle.getString("timerTitle")}, durationMinutes=${bundle.getInt("durationMinutes")}")
+                Log.d("TimerFragment", "Bundle内容: atmosphereTitle=${bundle.getString("atmosphereTitle")}, atmosphere_image_uri=${bundle.getString("atmosphere_image_uri")}")
+                
+                // 确保使用正确的导航参数
+                try {
+                    findNavController().navigate(R.id.action_timerFragment_to_runningTimerFragment, bundle)
+                    Log.d("TimerFragment", "导航已执行")
+                } catch (e: Exception) {
+                    Log.e("TimerFragment", "导航失败: ${e.message}", e)
+                }
             },
             onAddClick = {
                 // 导航到创建时钟页面，传递isNewTimer标志

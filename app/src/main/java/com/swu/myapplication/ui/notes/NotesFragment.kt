@@ -343,7 +343,10 @@ class NotesFragment : Fragment() {
 
     private fun toggleEditMode(enabled: Boolean) {
         isEditMode = enabled
-        
+
+        // 获取底部导航栏
+        val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+
         // 更新界面
         binding.apply {
             // 标准模式组件
@@ -355,6 +358,9 @@ class NotesFragment : Fragment() {
             editModeToolbar.isVisible = enabled
             bottomActionBar.isVisible = enabled
         }
+
+        // 隐藏/显示底部导航栏
+        bottomNav?.visibility = if (enabled) View.GONE else View.VISIBLE
         
         // 更新适配器
         adapter.setEditMode(enabled)

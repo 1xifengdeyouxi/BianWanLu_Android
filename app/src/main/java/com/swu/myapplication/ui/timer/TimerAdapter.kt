@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.swu.myapplication.R
 import com.swu.myapplication.data.entity.Timer
+import android.util.Log
 
 class TimerAdapter(
     private var items: List<TimerItem>,
@@ -35,13 +36,24 @@ class TimerAdapter(
      */
     fun setTimerData(timers: List<Timer>) {
         this.timerData = timers
+        Log.d("TimerAdapter", "setTimerData: ${timers.size} timers")
+        timers.forEach { timer -> 
+            Log.d("TimerAdapter", "Timer: id=${timer.id}, title=${timer.title}") 
+        }
     }
     
     /**
      * 根据TimerItem的ID获取对应的完整Timer对象
      */
     fun getTimerById(timerId: Long): Timer? {
-        return timerData.find { it.id == timerId }
+        val timer = timerData.find { it.id == timerId }
+        Log.d("TimerAdapter", "getTimerById: 搜索ID=$timerId, 原始数据大小=${timerData.size}, 找到=${timer != null}")
+        if (timer == null) {
+            // 如果找不到，记录所有Timer的ID以便调试
+            val allIds = timerData.map { it.id }
+            Log.d("TimerAdapter", "所有Timer ID: $allIds")
+        }
+        return timer
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
