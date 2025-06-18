@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -39,6 +40,10 @@ class NotesFragment : Fragment() {
     private var isEditMode = false
     private lateinit var searchManager: SearchManager
 
+    // 拖拽和侧滑辅助类
+    private lateinit var dragSwipHelper: DragSwipHelper
+    private lateinit var swipItemHelper: SwipItemHelper
+
     // 将currentNotebookId改为ViewModel中的状态
     private val currentNotebookId: Long
         get() = viewModel.currentNotebookId.value
@@ -46,9 +51,6 @@ class NotesFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupViewModel()
-
-        // 处理笔记本ID的恢复
-        handleNotebookSelection()
     }
 
     override fun onCreateView(
@@ -74,15 +76,35 @@ class NotesFragment : Fragment() {
         // 观察数据变化
         observeNotes()
         observeNotebooks()
+        
+        // 在View创建完成后处理笔记本选择，确保能正确更新UI
+        handleNotebookSelection()
     }
 
     private fun handleNotebookSelection() {
-        lifecycleScope.launch {
-            // 如果从其他Fragment传入了特定的笔记本ID
-            if (args.selectedNotebookId != -1L) {
-                viewModel.setCurrentNotebook(args.selectedNotebookId)
+        // 如果从其他Fragment传入了特定的笔记本ID（不为默认值-1L）
+        if (args.selectedNotebookId != -1L) {
+            Log.d("NotesFragment", "接收到笔记本ID: ${args.selectedNotebookId}")
+            // 设置当前笔记本ID并立即刷新笔记列表
+            viewModel.setCurrentNotebook(args.selectedNotebookId)
+            
+            // 确保立即刷新笔记列表
+            lifecycleScope.launch {
+                // 给UI线程一点时间来处理笔记本切换
+                viewModel.refreshNotes()
+                
+                // 更新已选中的Chip
+                notebookViewModel.allNotebooks.value?.let { notebooks ->
+                    NotebookChipHelper.updateChipGroup(
+                        chipGroup = binding.notebookChipGroup,
+                        notebooks = notebooks,
+                        selectedNotebookId = args.selectedNotebookId,
+                        onNotebookSelected = { selectedId -> 
+                            viewModel.setCurrentNotebook(selectedId)
+                        }
+                    )
+                }
             }
-            // 否则保持当前选中的笔记本
         }
     }
 
@@ -111,11 +133,37 @@ class NotesFragment : Fragment() {
             )
             findNavController().navigate(action)
         }
-        
+
+        // 设置拖拽和侧滑监听器
+        adapter.setOnItemMoveListener { fromPosition, toPosition ->
+            viewModel.moveNote(fromPosition, toPosition)
+        }
+
+        adapter.setOnItemPinListener { note ->
+            viewModel.pinNote(note)
+        }
+
+        adapter.setOnItemDeleteListener { note ->
+            viewModel.deleteNote(note)
+        }
+
         binding.notesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = this@NotesFragment.adapter
         }
+
+        // 初始化拖拽和侧滑功能
+        setupDragAndSwipe()
+    }
+
+    private fun setupDragAndSwipe() {
+        // 初始化拖拽辅助类
+        dragSwipHelper = DragSwipHelper()
+        dragSwipHelper.attachSwipAndDragRecyclerView(binding.notesRecyclerView, adapter)
+
+        // 初始化侧滑辅助类
+        swipItemHelper = SwipItemHelper(adapter)
+        swipItemHelper.attachRecyclerView(binding.notesRecyclerView)
     }
 
     private fun setupSortPopupWindow() {
@@ -344,27 +392,38 @@ class NotesFragment : Fragment() {
     private fun toggleEditMode(enabled: Boolean) {
         isEditMode = enabled
 
-        // 获取底部导航栏
-        val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        // 控制拖拽和侧滑功能
+        if (::swipItemHelper.isInitialized) {
+            swipItemHelper.setSwipeEnabled(!enabled)
+        }
 
         // 更新界面
         binding.apply {
             // 标准模式组件
+            // 获取LinearLayout并设置其可见性
+            val normalModeLayout = root.findViewById<LinearLayout>(R.id.normalModeToolbar)
+            normalModeLayout?.isVisible = !enabled
+
             tvCollapsedTitle.isVisible = !enabled
             searchButton.isVisible = !enabled
             btnSort.isVisible = !enabled
-            
+
             // 编辑模式组件
             editModeToolbar.isVisible = enabled
             bottomActionBar.isVisible = enabled
         }
 
-        // 隐藏/显示底部导航栏
-        bottomNav?.visibility = if (enabled) View.GONE else View.VISIBLE
-        
+        // 更新底部导航栏可见性 - 确保在UI线程上执行
+        requireActivity().runOnUiThread {
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+            if (bottomNav != null) {
+                bottomNav.visibility = if (enabled) View.GONE else View.VISIBLE
+            }
+        }
+
         // 更新适配器
         adapter.setEditMode(enabled)
-        
+
         // 更新底部按钮状态
         updateBottomButtons()
     }

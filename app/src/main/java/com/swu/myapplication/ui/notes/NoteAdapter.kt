@@ -13,12 +13,19 @@ import java.util.*
 
 class NoteAdapter(
     private val onNoteClick: (Note) -> Unit
-) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallback()) {
+) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallback()),
+    DragSwipHelper.OnItemMoveListener,
+    SwipItemHelper.SwipItemInterface {
 
     private var currentSortType = NotesSortPopupWindow.SortType.MODIFY_TIME
     private var isEditMode = false
     private val selectedNotes = mutableSetOf<Note>()
     private var onSelectionChanged: ((Int) -> Unit)? = null
+
+    // 拖拽和侧滑相关回调
+    private var onItemMoveListener: ((Int, Int) -> Unit)? = null
+    private var onItemPinListener: ((Note) -> Unit)? = null
+    private var onItemDeleteListener: ((Note) -> Unit)? = null
 
     fun updateSortType(sortType: NotesSortPopupWindow.SortType) {
         currentSortType = sortType
@@ -35,6 +42,19 @@ class NoteAdapter(
 
     fun setOnSelectionChangedListener(listener: (Int) -> Unit) {
         onSelectionChanged = listener
+    }
+
+    // 设置拖拽和侧滑监听器
+    fun setOnItemMoveListener(listener: (Int, Int) -> Unit) {
+        onItemMoveListener = listener
+    }
+
+    fun setOnItemPinListener(listener: (Note) -> Unit) {
+        onItemPinListener = listener
+    }
+
+    fun setOnItemDeleteListener(listener: (Note) -> Unit) {
+        onItemDeleteListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -73,7 +93,7 @@ class NoteAdapter(
                     NotesSortPopupWindow.SortType.CREATE_TIME -> note.createdTime
                     NotesSortPopupWindow.SortType.MODIFY_TIME -> note.modifiedTime
                     NotesSortPopupWindow.SortType.EDIT -> {
-                        TODO()
+                        note.modifiedTime // 在编辑模式下显示修改时间
                     }
                 }
                 tvTime.text = formatTime(timeToShow)
@@ -116,4 +136,29 @@ class NoteAdapter(
             return oldItem == newItem
         }
     }
-} 
+
+    // 实现DragSwipHelper.OnItemMoveListener接口
+    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+        onItemMoveListener?.invoke(fromPosition, toPosition)
+        return true
+    }
+
+    // 实现SwipItemHelper.SwipItemInterface接口
+    override fun onItemPin(position: Int) {
+        if (position < itemCount) {
+            val note = getItem(position)
+            onItemPinListener?.invoke(note)
+        }
+    }
+
+    override fun onItemDelete(position: Int) {
+        if (position < itemCount) {
+            val note = getItem(position)
+            onItemDeleteListener?.invoke(note)
+        }
+    }
+
+    override fun getItemCount(): Int {
+        return currentList.size
+    }
+}

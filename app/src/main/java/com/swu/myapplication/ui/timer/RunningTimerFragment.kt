@@ -49,6 +49,27 @@ class RunningTimerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        // 记录接收到的所有参数
+        Log.d("RunningTimerFragment", "onViewCreated: 开始获取参数")
+        if (arguments != null) {
+            val keys = arguments?.keySet()?.toList() ?: emptyList()
+            Log.d("RunningTimerFragment", "接收到的参数keys: $keys")
+            
+            // 打印每个参数的值
+            keys.forEach { key ->
+                when (val value = arguments?.get(key)) {
+                    is String -> Log.d("RunningTimerFragment", "参数 $key = $value (String)")
+                    is Int -> Log.d("RunningTimerFragment", "参数 $key = $value (Int)")
+                    is Long -> Log.d("RunningTimerFragment", "参数 $key = $value (Long)")
+                    is Boolean -> Log.d("RunningTimerFragment", "参数 $key = $value (Boolean)")
+                    null -> Log.d("RunningTimerFragment", "参数 $key = null")
+                    else -> Log.d("RunningTimerFragment", "参数 $key = $value (${value.javaClass.simpleName})")
+                }
+            }
+        } else {
+            Log.e("RunningTimerFragment", "未接收到任何参数！arguments 为 null")
+        }
+        
         // 获取传递的参数
         arguments?.let { args ->
             timerTitle = args.getString("timerTitle", "静心")
@@ -67,10 +88,9 @@ class RunningTimerFragment : Fragment() {
                 "森林" -> R.drawable.senlin
                 "星空" -> R.drawable.xingkong
                 "海洋" -> R.drawable.haiyang
-                //其他默认图片
-                else -> R.drawable.chengshi
+                else -> R.drawable.senlin
             }
-           Log.d("RunningTimerFragment", " RunningTimerFragment中 $timerTitle $durationMinutes  $atmosphereTitle $customImageUri $atmosphereResId")
+            Log.d("RunningTimerFragment", "解析参数: timerTitle=$timerTitle, durationMinutes=$durationMinutes, atmosphereTitle=$atmosphereTitle, customImageUri=$customImageUri, atmosphereResId=$atmosphereResId")
         }
         
         // 初始化UI
@@ -82,41 +102,60 @@ class RunningTimerFragment : Fragment() {
         // 不再自动开始计时器，改为显示播放按钮
         remainingTimeMillis = durationMinutes * 60 * 1000L
         binding.btnPlayPause.setImageResource(R.drawable.ic_play)
+        updateTimerDisplay(remainingTimeMillis)  // 确保初始显示正确的时间
     }
     
     private fun setupUI() {
-        // 设置日期
-        val dateFormat = SimpleDateFormat("M月d日，EEEE", Locale.CHINESE)
-        binding.tvDate.text = dateFormat.format(Date())
-        
-        // 设置标题
-        binding.tvTimerTitle.text = timerTitle
-        Log.d("RunningTimerFragment", "Timer Title: $timerTitle")
-        // 设置背景 - 优先使用标题
-        if (!customImageUri.isNullOrEmpty()) {
-            try {
-                // 尝试加载自定义图片URI作为背景
-                val uri = Uri.parse(customImageUri)
-                binding.ivBackgroundImage.setImageURI(uri)
-                binding.ivBackgroundImage.visibility = View.VISIBLE
-                // 避免重复设置背景资源
-                binding.root.setBackgroundResource(android.R.color.transparent)
-                Log.d("RunningTimerFragment", "自定义图片: $uri")
-            } catch (e: Exception) {
-                // 加载失败时使用预定义资源
+        try {
+            // 设置日期
+            val dateFormat = SimpleDateFormat("M月d日，EEEE", Locale.CHINESE)
+            binding.tvDate.text = dateFormat.format(Date())
+            
+            // 设置标题
+            binding.tvTimerTitle.text = timerTitle
+            Log.d("RunningTimerFragment", "设置标题: $timerTitle")
+            
+            // 设置背景 - 优先使用自定义
+            if (!customImageUri.isNullOrEmpty()) {
+                try {
+                    Log.d("RunningTimerFragment", "尝试加载自定义图片URI: $customImageUri")
+                    // 尝试加载自定义图片URI作为背景
+                    val uri = Uri.parse(customImageUri)
+                    binding.ivBackgroundImage.setImageURI(uri)
+                    binding.ivBackgroundImage.visibility = View.VISIBLE
+                    // 避免重复设置背景资源
+                    binding.root.setBackgroundResource(android.R.color.transparent)
+                    Log.d("RunningTimerFragment", "成功加载自定义图片")
+                } catch (e: Exception) {
+                    Log.e("RunningTimerFragment", "加载自定义图片失败: ${e.message}", e)
+                    // 加载失败时使用预定义资源
+                    binding.ivBackgroundImage.visibility = View.GONE
+                    binding.root.setBackgroundResource(atmosphereResId)
+                    Toast.makeText(requireContext(), "无法加载自定义背景，已使用默认背景", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Log.d("RunningTimerFragment", "使用预定义背景资源ID: $atmosphereResId, 氛围: $atmosphereTitle")
+                // 使用预定义资源
                 binding.ivBackgroundImage.visibility = View.GONE
                 binding.root.setBackgroundResource(atmosphereResId)
-                Toast.makeText(requireContext(), "无法加载自定义背景，已使用默认背景", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            // 使用预定义资源
-            binding.ivBackgroundImage.visibility = View.GONE
-            binding.root.setBackgroundResource(atmosphereResId)
-            Log.d("RunningTimerFragment", "使用预定义资源:")
+            
+            // 初始化时间显示
+            updateTimerDisplay(durationMinutes * 60 * 1000L)
+            Log.d("RunningTimerFragment", "设置初始时间: $durationMinutes 分钟")
+
+        } catch (e: Exception) {
+            Log.e("RunningTimerFragment", "设置UI出错: ${e.message}", e)
+            // 如果设置UI失败，至少确保背景可见
+            binding.root.setBackgroundResource(R.drawable.senlin)
+            // 继续尝试设置标题和时间
+            try {
+                binding.tvTimerTitle.text = timerTitle
+                updateTimerDisplay(durationMinutes * 60 * 1000L)
+            } catch (e2: Exception) {
+                Log.e("RunningTimerFragment", "设置基本UI也失败: ${e2.message}", e2)
+            }
         }
-        
-        // 初始化时间显示
-        updateTimerDisplay(durationMinutes * 60 * 1000L)
     }
     
     private fun setupClickListeners() {

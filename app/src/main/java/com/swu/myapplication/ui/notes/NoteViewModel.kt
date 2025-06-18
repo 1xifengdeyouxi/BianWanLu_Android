@@ -40,6 +40,8 @@ class NoteViewModel(
     fun setCurrentNotebook(notebookId: Long) {
         if (_currentNotebookId.value != notebookId) {
             _currentNotebookId.value = notebookId
+            // 在设置ID后立即刷新笔记列表
+            refreshNotes()
         }
     }
 
@@ -137,8 +139,8 @@ class NoteViewModel(
             }
 
             NotesSortPopupWindow.SortType.EDIT -> {
-                //编辑笔记
-                TODO()
+                // 编辑模式下使用修改时间排序
+                notes.sortedByDescending { it.modifiedTime }
             }
         }
         _notes.value = sortedNotes
@@ -154,6 +156,27 @@ class NoteViewModel(
 
     fun clearSearch() {
         _searchResults.value = emptyList()
+    }
+
+    // 置顶笔记
+    fun pinNote(note: Note) = viewModelScope.launch {
+        repository.pinNote(note)
+        refreshNotes()
+    }
+
+    // 移动笔记位置（拖拽排序）
+    fun moveNote(fromPosition: Int, toPosition: Int) = viewModelScope.launch {
+        val currentNotes = _notes.value.toMutableList()
+        if (fromPosition < currentNotes.size && toPosition < currentNotes.size) {
+            val movedNote = currentNotes.removeAt(fromPosition)
+            currentNotes.add(toPosition, movedNote)
+
+            // 更新UI
+            _notes.value = currentNotes
+
+            // 更新数据库中的排序
+            repository.moveNote(fromPosition, toPosition, currentNotes)
+        }
     }
 
     class Factory(

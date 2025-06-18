@@ -85,9 +85,7 @@
             tools:text="00:06" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- 设置按钮 -->
-
-    <!-- 暂停/继续按钮 -->
+    <!-- 设置/退出按钮 -->
     <ImageButton
         android:id="@+id/btnSettings"
         android:layout_width="48dp"
@@ -101,6 +99,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#FFFFFF" />
 
+    <!-- 暂停/继续按钮 -->
     <ImageButton
         android:id="@+id/btnPlayPause"
         android:layout_width="72dp"
@@ -108,10 +107,36 @@
         android:layout_marginBottom="64dp"
         android:background="@drawable/bg_circle_button"
         android:contentDescription="暂停/继续"
-        android:src="@drawable/ic_pause"
+        android:src="@drawable/ic_play"
         app:tint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- 页面指示器 -->
+    <LinearLayout
+        android:id="@+id/pageIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:id="@+id/indicator1"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_indicator_selected" />
+
+        <View
+            android:id="@+id/indicator2"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_indicator_unselected" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout> 

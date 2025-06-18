@@ -20,7 +20,7 @@ import com.swu.myapplication.data.model.TodoCategory
 
 @Database(
     entities = [Note::class, Segment::class, Notebook::class, Todo::class, TodoCategory::class, Timer::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

@@ -225,8 +225,12 @@ class CreateTimerFragment : Fragment() {
 
         // 获取氛围信息
         val atmosphereTitle = selectedAtmosphere?.title
-        val atmosphereImageUri = selectedAtmosphere?.customImageUri
-            ?: selectedAtmosphere?.let { it.imageResId.toString() }
+        // 只有自定义氛围才保存atmosphereImageUri
+        val atmosphereImageUri = if (atmosphereTitle == "自定义") {
+            selectedAtmosphere?.customImageUri
+        } else {
+            null
+        }
 
         if (isNewTimer) {
             // 创建新计时器

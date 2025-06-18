@@ -39,6 +39,32 @@ class NoteRepository(
         return noteDao.searchNotes("%$query%")
     }
 
+    // 更新笔记排序
+    suspend fun updateNoteSortOrder(noteId: Long, sortOrder: Int) {
+        noteDao.updateNoteSortOrder(noteId, sortOrder)
+    }
+
+    // 获取最大排序值
+    suspend fun getMaxSortOrder(notebookId: Long): Int {
+        return noteDao.getMaxSortOrder(notebookId) ?: 0
+    }
+
+    // 置顶笔记（设置为最小排序值）
+    suspend fun pinNote(note: Note) {
+        // 将其他笔记的排序值增加1
+        noteDao.incrementSortOrderFrom(note.notebookId, 0)
+        // 将当前笔记设置为0（置顶）
+        noteDao.updateNoteSortOrder(note.id, 0)
+    }
+
+    // 移动笔记位置
+    suspend fun moveNote(fromPosition: Int, toPosition: Int, notes: List<Note>) {
+        // 更新所有受影响笔记的排序值
+        notes.forEachIndexed { index, note ->
+            noteDao.updateNoteSortOrder(note.id, index)
+        }
+    }
+
     // 获取笔记本中的笔记数量
     suspend fun getNoteCountInNotebook(notebookId: Long): Int {
         return noteDao.getNoteCountInNotebook(notebookId)

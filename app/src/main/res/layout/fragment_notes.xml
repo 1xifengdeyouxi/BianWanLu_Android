@@ -19,7 +19,9 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:titleEnabled="false">
 
+            <!-- 标准模式下的标题区域 -->
             <LinearLayout
+                android:id="@+id/normalModeToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -47,6 +49,45 @@
                     android:text="0篇笔记"
                     android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- 编辑模式工具栏 -->
+            <LinearLayout
+                android:id="@+id/editModeToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:background="?android:attr/colorBackground"
+                android:elevation="4dp"
+                app:layout_collapseMode="pin">
+
+                <TextView
+                    android:id="@+id/btnCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:text="取消"
+                    android:textColor="@color/text_primary" />
+
+                <TextView
+                    android:id="@+id/tvEditTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="选择笔记"
+                    android:textColor="@color/text_primary" />
+
+                <TextView
+                    android:id="@+id/btnComplete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:text="完成"
+                    android:textColor="@color/text_primary" />
             </LinearLayout>
 
             <androidx.appcompat.widget.Toolbar
@@ -99,45 +140,6 @@
                     </LinearLayout>
                 </RelativeLayout>
             </androidx.appcompat.widget.Toolbar>
-
-            <!-- 添加编辑模式的标题栏 -->
-            <LinearLayout
-                android:id="@+id/editModeToolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                android:elevation="4dp"
-                android:background="?android:attr/colorBackground"
-                app:layout_collapseMode="pin">
-
-                <TextView
-                    android:id="@+id/btnCancel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="取消"
-                    android:textColor="@color/text_primary" />
-
-                <TextView
-                    android:id="@+id/tvEditTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="选择笔记"
-                    android:textColor="@color/text_primary" />
-
-                <TextView
-                    android:id="@+id/btnComplete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="完成"
-                    android:textColor="@color/text_primary" />
-            </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         <!-- 标签栏（固定不折叠） -->
@@ -251,7 +253,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="@string/add_note"
+        android:contentDescription="添加笔记"
         app:srcCompat="@drawable/ic_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout> 
